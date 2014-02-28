@@ -3,7 +3,7 @@
 var express = require('express');
 var fs      = require('fs');
 var mongoose = require('mongoose');
-var good = false;
+var message = "wut";
 
 
 /**
@@ -90,11 +90,10 @@ var SampleApp = function() {
 
         self.routes['/'] = function(req, res) {
            // res.setHeader('Content-Type', 'text/html');
-           if(good){
-            res.send("yayyyyyy");
-           }else{
-            res.send("booo");
-           }
+         
+            res.send(message);
+
+           
 
             
             
@@ -117,9 +116,11 @@ var SampleApp = function() {
 
         mongoose.connect(self.connection_string);
         var db = mongoose.connection;
-        db.on('error', console.error.bind(console, 'connection error:'));
+        db.on('error', function(){
+            message = "error";
+        });
         db.once('open', function callback () {
-            good = true;
+            message = "yayyyy";
         });
 
     };
