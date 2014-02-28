@@ -131,7 +131,7 @@ var SampleApp = function() {
             message = "error, the connection string is " + self.connection_string;
         });
         db.once('open', function callback () {
-            q1.findSimilarTypes(function(err, dogs){
+            Question.count(function(err, dogs){
                 message = dogs.toString();
             });
         });
