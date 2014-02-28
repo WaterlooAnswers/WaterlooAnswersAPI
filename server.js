@@ -29,15 +29,15 @@ var SampleApp = function() {
         self.port      = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
         // default to a 'localhost' configuration:
-        self.connection_string = '127.0.0.1:27017/sj';
+        //self.connection_string = '127.0.0.1:27017/sj';
         // if OPENSHIFT env variables are present, use the available connection info:
-        if(process.env.OPENSHIFT_MONGODB_DB_PASSWORD){
+        //if(process.env.OPENSHIFT_MONGODB_DB_PASSWORD){
           self.connection_string = "mongodb://" + "admin" + ":" +
           "hUQubExw-mK_" + "@" +
           process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
           process.env.OPENSHIFT_MONGODB_DB_PORT + '/' +
           "sj";
-        }
+        //}
 
         if (typeof self.ipaddress === "undefined") {
             //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
@@ -93,11 +93,16 @@ var SampleApp = function() {
           Question.find({}, function(err, questions){
                 message = questions;
             });
-          res.render('index', {questions: message});   
+          //res.render('index', {questions: message}); 
+          res.send(self.connection_string);
         };
 
         self.routes['/addquestion'] = function(req, res) {
           res.render('addquestion');   
+        };
+
+        self.routes['/addanswer'] = function(req, res){
+          res.render('addanswer', {id: req.query.id});
         };
 
     };
@@ -118,10 +123,16 @@ var SampleApp = function() {
             self.app.get(r, self.routes[r]);
         }
 
-        var questionSchema = mongoose.Schema({
-            name: String
-        });
-        Question = mongoose.model('Question', questionSchema);
+        Question = mongoose.model('Question', mongoose.Schema({
+            name: String,
+            text: String,
+            answers: {}
+        }));
+
+        Answer = mongoose.model('Answer', mongoose.Schema({
+            text: String
+        }));
+
         mongoose.connect(self.connection_string);
 
         self.app.post('/addquestion', function(req,res){
