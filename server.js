@@ -89,15 +89,13 @@ var SampleApp = function() {
         self.routes = { };
 
         self.routes['/'] = function(req, res) {
-           // res.setHeader('Content-Type', 'text/html');
-         
-            res.render('index', {text: "helloooo", questions: message});
-
-           
-
-            
-            
+          res.render('index', {questions: message});   
         };
+
+        self.routes['/addquestion'] = function(req, res) {
+          res.render('addquestion');   
+        };
+
     };
 
 
@@ -115,17 +113,28 @@ var SampleApp = function() {
             self.app.get(r, self.routes[r]);
         }
 
-        mongoose.connect(self.connection_string);
-
         var questionSchema = mongoose.Schema({
             name: String
         });
-
         var Question = mongoose.model('Question', questionSchema);
-        var q1 = new Question({name: "help with physics!"});
+        mongoose.connect(self.connection_string);
+
+        self.app.post('/addquestion', function(req,res){
+            var text = req.body.questtext;
+            var q1 = new Question({name: text});
+            q1.save(function(err, q1){
+              if (err) return console.error(err);
+            });
+            res.render('index', {questions: message});  
+        });
+
+
+
+
+       /* var q1 = new Question({name: "help with physics!"});
         q1.save(function(err, q1){
             if (err) return console.error(err);
-        });
+        });*/
 
         var db = mongoose.connection;
         db.on('error', function(){
