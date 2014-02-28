@@ -115,12 +115,25 @@ var SampleApp = function() {
         }
 
         mongoose.connect(self.connection_string);
+
+        var questionSchema = mongoose.Schema({
+            name: String
+        });
+
+        var Question = mongoose.model('Question', questionSchema);
+        var q1 = new Question({name: "help with physics!"});
+        q1.save(function(err, q1){
+            if (err) return console.error(err);
+        });
+
         var db = mongoose.connection;
         db.on('error', function(){
             message = "error, the connection string is " + self.connection_string;
         });
         db.once('open', function callback () {
-            message = "yayyyy";
+            q1.findSimilarTypes(function(err, dogs){
+                message = dogs.toString();
+            });
         });
 
     };
