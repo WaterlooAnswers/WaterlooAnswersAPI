@@ -91,7 +91,7 @@ var SampleApp = function() {
         self.routes['/'] = function(req, res) {
            // res.setHeader('Content-Type', 'text/html');
          
-            res.send(message);
+            res.render('index.ejs');
 
            
 
