@@ -130,8 +130,8 @@ var SampleApp = function() {
             q1.save(function(err, q1){
               if (err) return console.error(err);
             });
-            res.location('index');
-            res.redirect('index', {questions: message});  
+            res.location('/');
+            res.redirect('/');  
         });
 
 
