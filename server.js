@@ -4,6 +4,7 @@ var express = require('express');
 var fs      = require('fs');
 var mongoose = require('mongoose');
 var message = false;
+var Question = false;
 
 
 /**
@@ -120,7 +121,7 @@ var SampleApp = function() {
         var questionSchema = mongoose.Schema({
             name: String
         });
-        var Question = mongoose.model('Question', questionSchema);
+        Question = mongoose.model('Question', questionSchema);
         mongoose.connect(self.connection_string);
 
         self.app.post('/addquestion', function(req,res){
@@ -129,7 +130,8 @@ var SampleApp = function() {
             q1.save(function(err, q1){
               if (err) return console.error(err);
             });
-            res.render('index', {questions: message});  
+            res.location('index');
+            res.redirect('index', {questions: message});  
         });
 
 
