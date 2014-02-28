@@ -106,6 +106,7 @@ var SampleApp = function() {
     self.initializeServer = function() {
         self.createRoutes();
         self.app = express();
+        self.app.use(express.urlencoded());
         self.app.set('view engine', 'ejs');
 
         //  Add handlers for the app (from the routes).
