@@ -91,7 +91,7 @@ var SampleApp = function() {
         self.routes['/'] = function(req, res) {
            // res.setHeader('Content-Type', 'text/html');
          
-            res.render('index.ejs');
+            res.render('index', {text: "helloooo"});
 
            
 
@@ -108,6 +108,7 @@ var SampleApp = function() {
     self.initializeServer = function() {
         self.createRoutes();
         self.app = express();
+        self.app.set('view engine', 'ejs');
 
         //  Add handlers for the app (from the routes).
         for (var r in self.routes) {
