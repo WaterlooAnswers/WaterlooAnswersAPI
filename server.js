@@ -3,7 +3,7 @@
 var express = require('express');
 var fs      = require('fs');
 var mongoose = require('mongoose');
-var message = "wut";
+var message = false;
 
 
 /**
@@ -91,7 +91,7 @@ var SampleApp = function() {
         self.routes['/'] = function(req, res) {
            // res.setHeader('Content-Type', 'text/html');
          
-            res.render('index', {text: "helloooo"});
+            res.render('index', {text: "helloooo", message: message});
 
            
 
