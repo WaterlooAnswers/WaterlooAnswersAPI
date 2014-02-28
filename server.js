@@ -132,7 +132,7 @@ var SampleApp = function() {
         });
         db.once('open', function callback () {
             Question.find({}, function(err, questions){
-                res.send(questions.toString());
+                message = (questions.toString());
             });
         });
 
