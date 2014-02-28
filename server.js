@@ -31,7 +31,7 @@ var SampleApp = function() {
         self.connection_string = '127.0.0.1:27017/sj';
         // if OPENSHIFT env variables are present, use the available connection info:
         //if(process.env.OPENSHIFT_MONGODB_DB_PASSWORD){
-          connection_string = "mongodb://" + "admin" + ":" +
+          self.connection_string = "mongodb://" + "admin" + ":" +
           "hUQubExw-mK_" + "@" +
           process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
           process.env.OPENSHIFT_MONGODB_DB_PORT + '/' +
