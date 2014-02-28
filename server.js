@@ -117,7 +117,7 @@ var SampleApp = function() {
         mongoose.connect(self.connection_string);
         var db = mongoose.connection;
         db.on('error', function(){
-            message = "error";
+            message = "error, the connection string is " + self.connection_string;
         });
         db.once('open', function callback () {
             message = "yayyyy";
