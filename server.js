@@ -91,7 +91,7 @@ var SampleApp = function() {
         self.routes['/'] = function(req, res) {
            // res.setHeader('Content-Type', 'text/html');
          
-            res.render('index', {text: "helloooo", message: message});
+            res.render('index', {text: "helloooo", questions: message});
 
            
 
@@ -133,7 +133,7 @@ var SampleApp = function() {
         });
         db.once('open', function callback () {
             Question.find({}, function(err, questions){
-                message = (questions.toString());
+                message = questions;
             });
         });
 

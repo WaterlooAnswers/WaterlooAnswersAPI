@@ -6,7 +6,9 @@
 <body>
 <%= text %> there!
 <br>
-<%= message %>
+<% questions.forEach(function(entry){ %>
+	<%= entry["name"] + "<br>" %>
+	<%}); %>
 <br>
 
 </body>
