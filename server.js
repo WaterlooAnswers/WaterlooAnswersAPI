@@ -30,13 +30,13 @@ var SampleApp = function() {
         // default to a 'localhost' configuration:
         self.connection_string = '127.0.0.1:27017/sj';
         // if OPENSHIFT env variables are present, use the available connection info:
-        //if(process.env.OPENSHIFT_MONGODB_DB_PASSWORD){
+        if(process.env.OPENSHIFT_MONGODB_DB_PASSWORD){
           self.connection_string = "mongodb://" + "admin" + ":" +
           "hUQubExw-mK_" + "@" +
           process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
           process.env.OPENSHIFT_MONGODB_DB_PORT + '/' +
           "sj";
-        //}
+        }
 
         if (typeof self.ipaddress === "undefined") {
             //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
@@ -131,8 +131,8 @@ var SampleApp = function() {
             message = "error, the connection string is " + self.connection_string;
         });
         db.once('open', function callback () {
-            Question.count(function(err, dogs){
-                message = dogs.toString();
+            Question.find({}, function(err, questions){
+                res.send(questions.toString());
             });
         });
 
