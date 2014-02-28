@@ -89,6 +89,9 @@ var SampleApp = function() {
         self.routes = { };
 
         self.routes['/'] = function(req, res) {
+          Question.find({}, function(err, questions){
+                message = questions;
+            });
           res.render('index', {questions: message});   
         };
 
@@ -142,9 +145,7 @@ var SampleApp = function() {
             message = "error, the connection string is " + self.connection_string;
         });
         db.once('open', function callback () {
-            Question.find({}, function(err, questions){
-                message = questions;
-            });
+            
         });
 
     };
