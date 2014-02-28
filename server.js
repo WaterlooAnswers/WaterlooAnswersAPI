@@ -120,7 +120,7 @@ var SampleApp = function() {
         mongoose.connect(self.connection_string);
 
         self.app.post('/addquestion', function(req,res){
-            var text = req.body.questtext;
+            var text = req.body.questtext.toString();
             var q1 = new Question({name: text});
             q1.save(function(err, q1){
               if (err) return console.error(err);
