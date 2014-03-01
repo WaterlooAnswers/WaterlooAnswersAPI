@@ -5,6 +5,7 @@ var fs      = require('fs');
 var mongoose = require('mongoose');
 var message = false;
 var Question = false;
+var Answer = false;
 
 
 /**
@@ -52,6 +53,18 @@ var SampleApp = function() {
             console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
             self.ipaddress = "127.0.0.1";
         };
+
+        Answer = mongoose.model('Answer', mongoose.Schema({
+          text: String
+        }));
+
+        Question = mongoose.model('Question', mongoose.Schema({
+          name: String,
+          text: String,
+          answers: [this.Answer]
+        }));
+
+
     };
 
 
@@ -139,28 +152,32 @@ var SampleApp = function() {
             self.app.get(r, self.routes[r]);
         }
 
-        Question = mongoose.model('Question', mongoose.Schema({
-            name: String,
-            text: String,
-            answers: {}
-        }));
-
-        Answer = mongoose.model('Answer', mongoose.Schema({
-            text: String
-        }));
-
         mongoose.connect(self.connection_string);
 
         self.app.post('/addquestion', function(req,res){
             var name = req.body.name.toString();
             var text = req.body.text.toString();
-            var q1 = new Question({name: name, text: text, answers: {}});
+            var q1 = new Question({name: name, text: text, answers: []});
             q1.save(function(err, q1){
               if (err) return console.error(err);
             });
             res.location('/');
             res.redirect('/');  
         });
+
+        self.app.post('/addanswer', function(req,res){
+            var text = req.body.text.toString();
+
+            var qid = req.body.questionid;
+            var a1 = new Answer({text: text});
+            a1.save();
+            Question.findById(qid, function(err, question){
+              question.answers.push(a1);
+              console.log(question.answers.toString());
+            });
+            res.location('/');
+            res.redirect('/');
+        });        
 
 
 
