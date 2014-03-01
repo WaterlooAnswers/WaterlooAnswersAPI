@@ -7,7 +7,7 @@
 <a href="/addquestion">Add a question!</a>
 <br><br><br>
 <% questions.forEach(function(entry){ %>
-	<%= entry["name"] %> <br>
+	<%= entry["name"] %> &nbsp;&nbsp;&nbsp;&nbsp; <a href="/addanswer?id=<%= entry["_id"]%>" >Answer This!</a><br>
 	<%}); %>
 <br>
 

@@ -28,15 +28,22 @@ var SampleApp = function() {
         self.ipaddress = process.env.OPENSHIFT_NODEJS_IP;
         self.port      = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
+        if(process.env.OPENSHIFT_MONGODB_DB_PASSWORD){
+          self.connection_string = 'mongodb://admin:hUQubExw-mK_@127.10.3.2:27017/sj';
+        }else{
+          self.connection_string = "mongodb://localhost/mfnadb";
+        }
+        
+
         // default to a 'localhost' configuration:
         //self.connection_string = '127.0.0.1:27017/sj';
         // if OPENSHIFT env variables are present, use the available connection info:
         //if(process.env.OPENSHIFT_MONGODB_DB_PASSWORD){
-          self.connection_string = "mongodb://" + "admin" + ":" +
-          "hUQubExw-mK_" + "@" +
-          process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
-          process.env.OPENSHIFT_MONGODB_DB_PORT + '/' +
-          "sj";
+          //self.connection_string = "mongodb://" + "admin" + ":" +
+          //"hUQubExw-mK_" + "@" +
+         // process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
+          //process.env.OPENSHIFT_MONGODB_DB_PORT + '/' +
+         // "sj";
         //}
 
         if (typeof self.ipaddress === "undefined") {
@@ -90,11 +97,16 @@ var SampleApp = function() {
         self.routes = { };
 
         self.routes['/'] = function(req, res) {
+         
           Question.find({}, function(err, questions){
                 message = questions;
+             
             });
-          //res.render('index', {questions: message}); 
-          res.send(self.connection_string);
+          if(typeof(message) === typeof(false)){
+            res.send("error!!");
+          }else{
+            res.render('index', {questions: message});
+          }
         };
 
         self.routes['/addquestion'] = function(req, res) {
@@ -102,7 +114,11 @@ var SampleApp = function() {
         };
 
         self.routes['/addanswer'] = function(req, res){
-          res.render('addanswer', {id: req.query.id});
+          Question.findById(req.query.id, function(err, q){
+            console.log(q["name"]);
+            res.render('addanswer', {question: q});
+          });
+          
         };
 
     };
@@ -136,8 +152,9 @@ var SampleApp = function() {
         mongoose.connect(self.connection_string);
 
         self.app.post('/addquestion', function(req,res){
-            var text = req.body.questtext.toString();
-            var q1 = new Question({name: text});
+            var name = req.body.name.toString();
+            var text = req.body.text.toString();
+            var q1 = new Question({name: name, text: text, answers: {}});
             q1.save(function(err, q1){
               if (err) return console.error(err);
             });
@@ -156,9 +173,10 @@ var SampleApp = function() {
         var db = mongoose.connection;
         db.on('error', function(){
             message = "error, the connection string is " + self.connection_string;
+            console.log("database could not open");
         });
         db.once('open', function callback () {
-            
+            console.log("database open");
         });
 
     };

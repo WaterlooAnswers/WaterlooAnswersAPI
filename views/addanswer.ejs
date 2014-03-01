@@ -5,9 +5,10 @@
 </head>
 <body>
 Question: 
+<%=question["name"] %>
  Type in your answer: 
- <form action="/addquestion" method="post">
-    <input type="text" name="questtext"><br>
+ <form action="/addanswer" method="post">
+    <input type="text" name="text"><br>
     <input type="submit" value="Send">
  </form>
 </body>
