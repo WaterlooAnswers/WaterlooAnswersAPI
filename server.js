@@ -54,14 +54,15 @@ var SampleApp = function() {
             self.ipaddress = "127.0.0.1";
         };
 
-        Answer = mongoose.model('Answer', mongoose.Schema({
+        var answerSchema = mongoose.Schema({
           text: String
-        }));
+        });
+        Answer = mongoose.model('Answer', answerSchema);
 
         Question = mongoose.model('Question', mongoose.Schema({
           name: String,
           text: String,
-          answers: [this.Answer]
+          answers: [answerSchema]
         }));
 
 
@@ -113,22 +114,40 @@ var SampleApp = function() {
          
           Question.find({}, function(err, questions){
                 message = questions;
-             
-            });
           if(typeof(message) === typeof(false)){
             res.send("error!!");
           }else{
             res.render('index', {questions: message});
           }
+            });
+
         };
 
-        self.routes['/addquestion'] = function(req, res) {
+        self.routes['/ask'] = function(req, res) {
           res.render('addquestion');   
+        };
+
+
+        self.routes['/learn'] = function(req, res){
+          Question.find({}, function(err, questions){
+                message = questions;
+          if(typeof(message) === typeof(false)){
+            res.send("error!!");
+          }else{
+            res.render('listquestions', {questions: message});
+          }
+            });
+        };
+        self.routes['/answer'] = self.routes['/learn'];
+
+        self.routes['/viewquestion'] = function(req, res){
+          Question.findById(req.query.id, function(err, q){
+            res.render('viewquestion', {question: q});
+          });
         };
 
         self.routes['/addanswer'] = function(req, res){
           Question.findById(req.query.id, function(err, q){
-            console.log(q["name"]);
             res.render('addanswer', {question: q});
           });
           
@@ -146,6 +165,7 @@ var SampleApp = function() {
         self.app = express();
         self.app.use(express.urlencoded());
         self.app.set('view engine', 'ejs');
+        self.app.use(express.static(__dirname + '/public'));
 
         //  Add handlers for the app (from the routes).
         for (var r in self.routes) {
@@ -154,29 +174,27 @@ var SampleApp = function() {
 
         mongoose.connect(self.connection_string);
 
-        self.app.post('/addquestion', function(req,res){
+        self.app.post('/ask', function(req,res){
             var name = req.body.name.toString();
             var text = req.body.text.toString();
-            var q1 = new Question({name: name, text: text, answers: []});
+            var q1 = new Question({name: name, text: text});
             q1.save(function(err, q1){
               if (err) return console.error(err);
+              res.location('/viewquestion');
+              res.redirect('/viewquestion?id=' + q1._id); 
             });
-            res.location('/');
-            res.redirect('/');  
         });
 
         self.app.post('/addanswer', function(req,res){
             var text = req.body.text.toString();
-
             var qid = req.body.questionid;
-            var a1 = new Answer({text: text});
-            a1.save();
-            Question.findById(qid, function(err, question){
-              question["answers"].push(a1);
-              console.log(question.answers.toString());
+            Question.findByIdAndUpdate(qid, {$push: {answers: {text:text}}}, function(err, question){
+             if(err)console.log("could not update answer");
+             console.log(question.answers.toString());
+            res.location('/viewquestion');
+            res.redirect('/viewquestion?id=' + qid.toString());
             });
-            res.location('/');
-            res.redirect('/');
+
         });        
 
 

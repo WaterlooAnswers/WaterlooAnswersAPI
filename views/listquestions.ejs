@@ -24,7 +24,7 @@
             <li>
               <a href="/answer">Answer</a>
             </li>
-            <li>
+            <li class="active">
               <a href="/learn">Learn</a>
             </li>
           </ul>
@@ -41,18 +41,19 @@
 
 
 <div class="container">
-<div class="page-header"><h1><%=question.name%></h1></div>
-<p class="lead"><%=question.text%></p>
-
-<h3>Your Answer: </h3>
- <form action="/addanswer" method="post">
- 	<input type="hidden" name="questionid" value="<%= question["_id"]%>">
-    <input type="text" name="text"><br>
-    <input type="submit" value="Send">
- </form>
-
-</div>
-
+<div class="page-header"><h1>Questions</h1></div>
+<div class="row">
+  <div class="col-lg-6">
+  <ul class="list-group">
+  <% questions.forEach(function(entry){ %>
+  <li class="list-group-item">
+    <span class="badge"><% if(entry.answers[0]){ %> <%=entry.answers.length%> <%}else{%>0<%}%></span>
+  <a href="/viewquestion?id=<%=entry._id%>"><%= entry["name"] %></a> </li>
+  <%}); %>
+  </ul>
+  </div>
+  </div>
+  </div>
 
 
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
