@@ -172,7 +172,7 @@ var SampleApp = function() {
             var a1 = new Answer({text: text});
             a1.save();
             Question.findById(qid, function(err, question){
-              question.answers.push(a1);
+              question["answers"].push(a1);
               console.log(question.answers.toString());
             });
             res.location('/');
