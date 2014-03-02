@@ -201,10 +201,11 @@ var SampleApp = function() {
         }));
 
         self.app.post('/login', passport.authenticate('local-login', {
-          successRedirect : '/loginsuccess', // redirect to the secure profile section
           failureRedirect : '/loginfail', // redirect back to the signup page if there is an error
           failureFlash : true // allow flash messages
-        }));
+        }), function(req,res){
+          res.render('index.ejs', {user: req.user});
+        });
   
         self.app.post('/ask', function(req,res){
             var name = req.body.name.toString();
