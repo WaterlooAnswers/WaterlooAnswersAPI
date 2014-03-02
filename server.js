@@ -94,7 +94,7 @@ var SampleApp = function() {
       if(req.isAuthenticated()){
         return next();
       }
-      res.redirect('/');
+      res.redirect('/login');
     };
 
 
@@ -104,6 +104,7 @@ var SampleApp = function() {
      *  the handlers.
      */
     self.initializeServer = function() {
+
         self.createRoutes();
         self.app = express();
         self.app.use(express.urlencoded());
@@ -128,8 +129,12 @@ var SampleApp = function() {
             if(req.isAuthenticated()){
               res.redirect('/home');
             }else{
-              res.render('login', {message: req.flash('loginMessage')});
+              res.redirect('/login');
             }
+        });
+
+        self.app.get('/login', function(req, res){
+          res.render('login', {message: req.flash('loginMessage')});
         });
 
         self.app.get('/ask', isLoggedIn, function(req, res) {
@@ -191,9 +196,9 @@ var SampleApp = function() {
           failureFlash : true // allow flash messages
         }));
 
-        self.app.post('/', passport.authenticate('local-login', {
+        self.app.post('/login', passport.authenticate('local-login', {
           successRedirect : '/loginsuccess', // redirect to the secure profile section
-          failureRedirect : '/', // redirect back to the signup page if there is an error
+          failureRedirect : '/login', // redirect back to the signup page if there is an error
           failureFlash : true // allow flash messages
         }));
   
