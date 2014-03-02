@@ -3,9 +3,12 @@
 var express = require('express');
 var fs      = require('fs');
 var mongoose = require('mongoose');
+var passport = require('passport');
+var flash    = require('connect-flash');
+
 var message = false;
-var Question = false;
-var Answer = false;
+var Question = require('./models/question');
+var Answer = require('./models/answer');
 
 
 /**
@@ -53,19 +56,6 @@ var SampleApp = function() {
             console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
             self.ipaddress = "127.0.0.1";
         };
-
-        var answerSchema = mongoose.Schema({
-          text: String
-        });
-        Answer = mongoose.model('Answer', answerSchema);
-
-        Question = mongoose.model('Question', mongoose.Schema({
-          name: String,
-          text: String,
-          answers: [answerSchema]
-        }));
-
-
     };
 
 
@@ -111,16 +101,11 @@ var SampleApp = function() {
         self.routes = { };
 
         self.routes['/'] = function(req, res) {
-         
-          Question.find({}, function(err, questions){
-                message = questions;
-          if(typeof(message) === typeof(false)){
-            res.send("error!!");
+          if(req.isAuthenticated()){
+            res.render('index.ejs', {user: req.user});
           }else{
-            res.render('index', {questions: message});
+            res.render('login', {message: req.flash('loginMessage')});
           }
-            });
-
         };
 
         self.routes['/ask'] = function(req, res) {
@@ -141,19 +126,30 @@ var SampleApp = function() {
         self.routes['/answer'] = self.routes['/learn'];
 
         self.routes['/viewquestion'] = function(req, res){
-          Question.findById(req.query.id, function(err, q){
+          Question.findById(req.query.id).populate('answers').exec(function(err, q){
             res.render('viewquestion', {question: q});
           });
         };
 
         self.routes['/addanswer'] = function(req, res){
-          Question.findById(req.query.id, function(err, q){
+          Question.findById(req.query.id).populate('answers').exec(function(err, q){
             res.render('addanswer', {question: q});
           });
-          
+        };
+
+        self.routes['/signup'] = function(req, res){
+          res.render('signup.ejs', {message: req.flash('signupMessage')});
         };
 
     };
+
+    function isLoggedIn(req, res, next){
+      if(req.isAuthenticated()){
+        return next();
+      }
+      res.redirect('/');
+    };
+
 
 
     /**
@@ -164,6 +160,15 @@ var SampleApp = function() {
         self.createRoutes();
         self.app = express();
         self.app.use(express.urlencoded());
+        self.app.use(express.logger('dev'));
+        self.app.use(express.cookieParser());
+
+        self.app.use(express.session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+        self.app.use(passport.initialize());
+        self.app.use(passport.session()); // persistent login sessions
+        self.app.use(flash()); // use connect-flash for flash messages stored in session
+
+
         self.app.set('view engine', 'ejs');
         self.app.use(express.static(__dirname + '/public'));
 
@@ -172,14 +177,45 @@ var SampleApp = function() {
             self.app.get(r, self.routes[r]);
         }
 
-        mongoose.connect(self.connection_string);
+
+        self.app.get('/home', isLoggedIn, function(req, res){
+          res.render('index.ejs', {user: req.user});
+        });
+
+        self.app.get('/logout', function(req,res){
+          req.logout();
+          res.redirect('/');
+        });
+
+        self.app.get('/profile', isLoggedIn, function(req, res){
+          Question.find({'asker': req.user._id}, function(err, docs){
+            res.render('profile', {user: req.user, questions: docs});
+          });
+          
+        });
+
+        self.app.post('/signup', passport.authenticate('local-signup', {
+          successRedirect : '/home', // redirect to the secure profile section
+          failureRedirect : '/signup', // redirect back to the signup page if there is an error
+          failureFlash : true // allow flash messages
+        }));
+
+        self.app.post('/', passport.authenticate('local-login', {
+          successRedirect : '/home', // redirect to the secure profile section
+          failureRedirect : '/', // redirect back to the signup page if there is an error
+          failureFlash : true // allow flash messages
+        }));
+  
 
         self.app.post('/ask', function(req,res){
             var name = req.body.name.toString();
             var text = req.body.text.toString();
-            var q1 = new Question({name: name, text: text});
+            var asker = req.user._id;
+            var q1 = new Question({name: name, text: text, asker: asker});
             q1.save(function(err, q1){
-              if (err) return console.error(err);
+              if (err) {
+                res.send("could not save question");
+              };
               res.location('/viewquestion');
               res.redirect('/viewquestion?id=' + q1._id); 
             });
@@ -187,13 +223,17 @@ var SampleApp = function() {
 
         self.app.post('/addanswer', function(req,res){
             var text = req.body.text.toString();
+            var ans = new Answer({text: text});
             var qid = req.body.questionid;
-            Question.findByIdAndUpdate(qid, {$push: {answers: {text:text}}}, function(err, question){
-             if(err)console.log("could not update answer");
-             console.log(question.answers.toString());
-            res.location('/viewquestion');
-            res.redirect('/viewquestion?id=' + qid.toString());
+            ans.save(function(err, ans1){
+              Question.findByIdAndUpdate(qid, {$push: {answers: ans._id}}, function(err, question){
+               if(err)console.log("could not update answer");
+               console.log(question.answers.toString());
+              res.location('/viewquestion');
+              res.redirect('/viewquestion?id=' + qid.toString());
+              });
             });
+
 
         });        
 
@@ -204,7 +244,8 @@ var SampleApp = function() {
         q1.save(function(err, q1){
             if (err) return console.error(err);
         });*/
-
+        mongoose.connect(self.connection_string);
+        require('./config/passport')(passport);
         var db = mongoose.connection;
         db.on('error', function(){
             message = "error, the connection string is " + self.connection_string;

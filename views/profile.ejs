@@ -27,12 +27,13 @@
       </div>
     </div>
 
+<div class="container">
+  <div class="page-header"><h1>Questions you've asked:</h1></div>
+  <% questions.forEach(function(entry){ %>
+    <p> <a href="/viewquestion?id=<%=entry._id%>"><%= entry.name %></a></p>
+  <%});%>
 
-    <div class="text-center" style="position:absolute; top:30%; left:40%">
-            <a href="/ask"><h1 style="font-size:60px">ask</h1></a>
-            <a href="/answer"><h1 style="font-size:60px">answer</h1></a>
-            <a href="/learn"><h1 style="font-size:60px">learn</h1></a>
-    </div>
+</div>
 
 
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
