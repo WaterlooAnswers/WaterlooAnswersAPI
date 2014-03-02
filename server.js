@@ -192,7 +192,7 @@ var SampleApp = function() {
         }));
 
         self.app.post('/', passport.authenticate('local-login', {
-          successRedirect : '/home', // redirect to the secure profile section
+          successRedirect : '/loginsuccess', // redirect to the secure profile section
           failureRedirect : '/', // redirect back to the signup page if there is an error
           failureFlash : true // allow flash messages
         }));
