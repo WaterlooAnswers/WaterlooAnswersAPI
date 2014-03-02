@@ -190,6 +190,10 @@ var SampleApp = function() {
           
         });
 
+        self.app.get('/loginfail', function(req, res){
+          res.send("faillll");
+        });
+
         self.app.post('/signup', passport.authenticate('local-signup', {
           successRedirect : '/loginsuccess', // redirect to the secure profile section
           failureRedirect : '/signup', // redirect back to the signup page if there is an error
@@ -198,7 +202,7 @@ var SampleApp = function() {
 
         self.app.post('/login', passport.authenticate('local-login', {
           successRedirect : '/loginsuccess', // redirect to the secure profile section
-          failureRedirect : '/login', // redirect back to the signup page if there is an error
+          failureRedirect : '/loginfail', // redirect back to the signup page if there is an error
           failureFlash : true // allow flash messages
         }));
   
