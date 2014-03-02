@@ -1,19 +1,19 @@
 {
-  "name": "OpenShift-Sample-App",
+  "name": "ASKUW Alpha 1",
   "version": "1.0.0",
-  "description": "OpenShift Sample Application",
+  "description": "A system to ask questions",
   "keywords": [
-    "OpenShift",
+    "passportjs",
     "Node.js",
     "application",
-    "openshift"
+    "expressjs"
   ],
   "author": {
-    "name": "OpenShift",
-    "email": "ramr@example.org",
-    "url": "http://www.openshift.com/"
+    "name": "Sahil Jain",
+    "email": "sahil@sahiljain.ca",
+    "url": "http://www.sahiljain.ca"
   },
-  "homepage": "http://www.openshift.com/",
+  "homepage": "http://ask.sahiljain.ca/",
   "repository": {
     "type": "git",
     "url": "https://github.com/openshift/origin-server"

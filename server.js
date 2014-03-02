@@ -169,6 +169,10 @@ var SampleApp = function() {
           res.render('index.ejs', {user: req.user});
         });
 
+        self.app.get('/loginsuccess', function(req, res){
+          res.render('index.ejs', {user: req.user});
+        });
+
         self.app.get('/logout', function(req,res){
           req.logout();
           res.redirect('/');
@@ -182,7 +186,7 @@ var SampleApp = function() {
         });
 
         self.app.post('/signup', passport.authenticate('local-signup', {
-          successRedirect : '/home', // redirect to the secure profile section
+          successRedirect : '/loginsuccess', // redirect to the secure profile section
           failureRedirect : '/signup', // redirect back to the signup page if there is an error
           failureFlash : true // allow flash messages
         }));
