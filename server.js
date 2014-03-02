@@ -5,8 +5,6 @@ var fs      = require('fs');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var flash    = require('connect-flash');
-
-var message = false;
 var Question = require('./models/question');
 var Answer = require('./models/answer');
 
@@ -37,18 +35,6 @@ var SampleApp = function() {
         }else{
           self.connection_string = "mongodb://localhost/mfnadb";
         }
-        
-
-        // default to a 'localhost' configuration:
-        //self.connection_string = '127.0.0.1:27017/sj';
-        // if OPENSHIFT env variables are present, use the available connection info:
-        //if(process.env.OPENSHIFT_MONGODB_DB_PASSWORD){
-          //self.connection_string = "mongodb://" + "admin" + ":" +
-          //"hUQubExw-mK_" + "@" +
-         // process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
-          //process.env.OPENSHIFT_MONGODB_DB_PORT + '/' +
-         // "sj";
-        //}
 
         if (typeof self.ipaddress === "undefined") {
             //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
@@ -100,46 +86,7 @@ var SampleApp = function() {
     self.createRoutes = function() {
         self.routes = { };
 
-        self.routes['/'] = function(req, res) {
-          if(req.isAuthenticated()){
-            res.render('index.ejs', {user: req.user});
-          }else{
-            res.render('login', {message: req.flash('loginMessage')});
-          }
-        };
 
-        self.routes['/ask'] = function(req, res) {
-          res.render('addquestion');   
-        };
-
-
-        self.routes['/learn'] = function(req, res){
-          Question.find({}, function(err, questions){
-                message = questions;
-          if(typeof(message) === typeof(false)){
-            res.send("error!!");
-          }else{
-            res.render('listquestions', {questions: message});
-          }
-            });
-        };
-        self.routes['/answer'] = self.routes['/learn'];
-
-        self.routes['/viewquestion'] = function(req, res){
-          Question.findById(req.query.id).populate('answers').exec(function(err, q){
-            res.render('viewquestion', {question: q});
-          });
-        };
-
-        self.routes['/addanswer'] = function(req, res){
-          Question.findById(req.query.id).populate('answers').exec(function(err, q){
-            res.render('addanswer', {question: q});
-          });
-        };
-
-        self.routes['/signup'] = function(req, res){
-          res.render('signup.ejs', {message: req.flash('signupMessage')});
-        };
 
     };
 
@@ -168,15 +115,55 @@ var SampleApp = function() {
         self.app.use(passport.session()); // persistent login sessions
         self.app.use(flash()); // use connect-flash for flash messages stored in session
 
-
         self.app.set('view engine', 'ejs');
         self.app.use(express.static(__dirname + '/public'));
 
         //  Add handlers for the app (from the routes).
-        for (var r in self.routes) {
-            self.app.get(r, self.routes[r]);
-        }
+        /*for (var r in self.routes) {
+            self.app.get(r, self.app.get(r]);
+        }*/
 
+
+        self.app.get('/', function(req, res) {
+            if(req.isAuthenticated()){
+              res.redirect('/home');
+            }else{
+              res.render('login', {message: req.flash('loginMessage')});
+            }
+        });
+
+        self.app.get('/ask', isLoggedIn, function(req, res) {
+          res.render('addquestion', {user: req.user});   
+        });
+
+
+        self.app.get('/learn', isLoggedIn, function(req, res){
+          Question.find({}, function(err, questions){
+            res.render('listquestions', {questions: questions, user: req.user});
+            });
+        });
+
+        self.app.get('/answer', isLoggedIn, function(req, res){
+          Question.find({}, function(err, questions){
+            res.render('listquestions', {questions: questions, user:req.user});
+            });
+        });
+
+        self.app.get('/viewquestion', isLoggedIn, function(req, res){
+          Question.findById(req.query.id).populate('answers').exec(function(err, q){
+            res.render('viewquestion', {user: req.user, question: q, success: req.query.success});
+          });
+        });
+
+        self.app.get('/addanswer', isLoggedIn, function(req, res){
+          Question.findById(req.query.id).populate('answers').exec(function(err, q){
+            res.render('addanswer', {question: q, user: req.user});
+          });
+        });
+
+        self.app.get('/signup', function(req, res){
+          res.render('signup.ejs', {message: req.flash('signupMessage')});
+        });
 
         self.app.get('/home', isLoggedIn, function(req, res){
           res.render('index.ejs', {user: req.user});
@@ -206,7 +193,6 @@ var SampleApp = function() {
           failureFlash : true // allow flash messages
         }));
   
-
         self.app.post('/ask', function(req,res){
             var name = req.body.name.toString();
             var text = req.body.text.toString();
@@ -217,7 +203,7 @@ var SampleApp = function() {
                 res.send("could not save question");
               };
               res.location('/viewquestion');
-              res.redirect('/viewquestion?id=' + q1._id); 
+              res.redirect('/viewquestion?id='+q1._id+"&success=true");
             });
         });
 
@@ -233,28 +219,23 @@ var SampleApp = function() {
               res.redirect('/viewquestion?id=' + qid.toString());
               });
             });
-
-
         });        
 
-
-
-
-       /* var q1 = new Question({name: "help with physics!"});
-        q1.save(function(err, q1){
-            if (err) return console.error(err);
-        });*/
         mongoose.connect(self.connection_string);
         require('./config/passport')(passport);
         var db = mongoose.connection;
         db.on('error', function(){
-            message = "error, the connection string is " + self.connection_string;
+            
             console.log("database could not open");
         });
         db.once('open', function callback () {
             console.log("database open");
         });
 
+          self.app.use(function(req, res) {
+            res.status(404);
+            res.render('errorpage');
+          });
     };
 
 

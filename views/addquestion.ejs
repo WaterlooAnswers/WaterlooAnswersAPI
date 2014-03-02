@@ -1,66 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Add a question</title>
-</head>
-<body>
-
-
-</body>
-</html>
-
-
-
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Hey</title>
+	<title>Ask Question</title>
 	<link href="stylesheets/bootstrap.css" rel="stylesheet">
 </head>
 <body>
 
-    <div class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <a href="/" class="navbar-brand">Home</a>
-          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div class="navbar-collapse collapse" id="navbar-main">
-          <ul class="nav navbar-nav">
-            <li class="active">
-              <a href="/ask">Ask</a>
-            </li>
-            <li>
-              <a href="/answer">Answer</a>
-            </li>
-            <li>
-              <a href="/learn">Learn</a>
-            </li>
-          </ul>
-
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="">About</a></li>
-            <li><a href="">Contact</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-
-
-
+  <% include navbar-loggedin %>
+  
 <div class="container">
 
+
+
+<div class="col-sm-6 col-sm-offset-3">
 <div class="page-header"><h1>Add a Question</h1></div>
- <form action="/ask" method="post">
- 	Title of Question: <input type="text" name="name"><br>
-    Question: <input type="text" name="text"><br>
-    <input type="submit" value="Send">
- </form>
+	<form action="/ask" method="post">
+		<div class="form-group">
+			<label>Question:</label>
+			<input type="text" class="form-control" name="name">
+		</div>
+		<div class="form-group">
+			<label>Description</label>
+			<textarea rows="3" class="form-control" name="text" style="resize:vertical;min-height:2em"></textarea>
+		</div>
+
+		<button type="submit" class="btn btn-warning btn-lg">Submit</button>
+	</form>
+</div>
 
 </div>
 
