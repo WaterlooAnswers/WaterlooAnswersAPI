@@ -210,7 +210,7 @@ var SampleApp = function() {
         self.app.post('/ask', function(req,res){
             var name = req.body.name.toString();
             var text = req.body.text.toString();
-            var asker = req.user._id;
+            var asker = req.user.id;
             var q1 = new Question({name: name, text: text, asker: asker});
             q1.save(function(err, q1){
               if (err) {
