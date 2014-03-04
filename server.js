@@ -203,7 +203,8 @@ var SampleApp = function() {
 
         self.app.post('/login', passport.authenticate('local-login', {
           failureRedirect : '/loginfail', // redirect back to the signup page if there is an error
-          failureFlash : true // allow flash messages
+          failureFlash : true, // allow flash messages
+          session: true
         }), function(req,res){
           res.render('index.ejs', {user: req.user});
         });
