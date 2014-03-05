@@ -1,0 +1,21 @@
+span {
+	font-size: 40px;
+	margin: 7px;
+}
+
+#up:hover, .upped{
+	color:green;
+}
+
+#down:hover, .downed{
+	color:red;
+}
+
+.row div{
+	display: inline-block;
+	float: left;
+}
+
+.row div div {
+	display: block;
+}

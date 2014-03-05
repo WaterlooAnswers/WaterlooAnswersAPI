@@ -3,17 +3,50 @@
 <head>
 	<title>Hey</title>
 	<link href="stylesheets/bootstrap.css" rel="stylesheet">
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+	<link rel="stylesheet" href="stylesheets/viewq.css">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+	</script>
+	<script>
+	var quest = "<%= question.id%>";
+	var enabled = true;
+	$(document).ready(function(){
+
+	  $("#up").click(function(){
+	  	if(enabled){
+	    	$.get("/upvote", {qid: quest});
+	    	$(this).addClass('upped');
+	    	$("#down").removeAttr('id');
+	    	enabled = false;
+		}
+	  });
+	  $("#down").click(function(){
+	  	if(enabled){
+	    	$.get("/downvote", {qid: quest});
+	    	$(this).addClass('downed');
+	    	$("#up").removeAttr('id');
+	    	enabled = false;
+		}
+	  });
+
+	});
+	</script>
 </head>
 <body>
 
 <% include navbar-loggedin %>
 <div class="container">
-<% if (success) { %>
-	<div class="alert alert-success">Question asked successfully!</div>
+<% if (message.length > 0) { %>
+	<div class="alert alert-success"><%= message %></div>
 <% } %>
 
 <div class="page-header"><h1><%=question.name%></h1></div>
-<p class="lead"><%=question.text%></p>
+<p><em>Asked by <%=question.asker.firstName %></em></p>
+
+<div class="row"><div class="col-md-1"><span class="fa fa-thumbs-o-up" id="up"></span><br>
+<span class="fa fa-thumbs-o-down" id="down"></div></span><div class=""><%=question.text%></div></div>
+
+
 
 <h3>Current Answers: </h3>
 <% if(question.answers[0]){ 
@@ -24,7 +57,13 @@
   No answers yet.
 <% } %>
 
-<a href="/addanswer?id=<%= question["_id"]%>">Answer this question!</a>
+
+<h3>Your Answer: </h3>
+ <form action="/addanswer" method="post">
+ 	<input type="hidden" name="questionid" value="<%= question["_id"]%>">
+    <input type="text" name="text"><br>
+    <input type="submit" value="Send">
+ </form>
 
 </div>
 
