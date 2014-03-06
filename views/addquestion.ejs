@@ -12,19 +12,27 @@
 
 
 
-<div class="col-sm-6 col-sm-offset-3">
+<div class="col-sm-8 col-sm-offset-2">
 <div class="page-header"><h1>Add a Question</h1></div>
 	<form action="/ask" method="post">
-		<div class="form-group">
-			<label>Question:</label>
-			<input type="text" class="form-control" name="name">
+		<div class="form-group category">
+			<label>Choose Category</label>
+			<select class="form-control" name="category">  
+				<% cats.forEach(function(entry){ %>
+					<option> <%= entry %> </option>
+				<%	});%>
+			</select>
 		</div>
-		<div class="form-group">
-			<label>Description</label>
+		<div class="form-group question" style="display: none">
+			<label>Question</label>
+			<input type="text" class="form-control" name="question"></input>
+		</div>
+		<div class="form-group description" style="display: none">
+			<label>Additional Details</label>
 			<textarea rows="3" class="form-control" name="text" style="resize:vertical;min-height:2em"></textarea>
 		</div>
 
-		<button type="submit" class="btn btn-warning btn-lg">Submit</button>
+		<button type="submit" class="btn btn-warning btn-lg submit" style="display: none">Submit</button>
 	</form>
 </div>
 
@@ -32,7 +40,18 @@
 
 
 
+
+
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script>
+	$("select").change(function(){
+		$(".question").show("fast", function(){
+			$(".description").show("fast", function(){
+				$(".submit").show("fast");
+			});
+		});
+	});
+</script>
 </body>
 </html>

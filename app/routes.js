@@ -18,7 +18,7 @@ module.exports = function(app, passport){
               Question.findByIdAndUpdate(req.query.qid, {$inc: {votes: 1}}, function(err, question){
                if(err)console.log("could not update votes");
                console.log(question.votes.toString());
-
+               res.end();
               });
         });
 
@@ -27,7 +27,7 @@ module.exports = function(app, passport){
               Question.findByIdAndUpdate(req.query.qid, {$inc: {votes: -1}}, function(err, question){
                if(err)console.log("could not update votes");
                console.log(question.votes.toString());
-
+               res.end();
               });
         });
 
@@ -36,7 +36,7 @@ module.exports = function(app, passport){
         });
 
         app.get('/ask', isLoggedIn, function(req, res) {
-          res.render('addquestion', {user: req.user});   
+          res.render('addquestion', {user: req.user, cats :Question.schema.path('category').enumValues});   
         });
 
         app.get('/learn', isLoggedIn, function(req, res){
@@ -81,6 +81,7 @@ module.exports = function(app, passport){
         });
 
         app.get('/profile', isLoggedIn, function(req, res){
+          console.log(req);
           Question.find({'asker': req.user._id}, function(err, docs){
             res.render('profile', {user: req.user, questions: docs});
           });
