@@ -103,10 +103,11 @@ module.exports = function(app, passport){
         });
   
         app.post('/ask', function(req,res){
-            var name = req.body.name.toString();
+            var question = req.body.question.toString();
             var text = req.body.text.toString();
             var asker = req.user.id;
-            var q1 = new Question({name: name, text: text, asker: asker});
+            var category = req.body.category.toString();
+            var q1 = new Question({name: question, text: text, asker: asker, category: category});
             q1.save(function(err, q1){
               if (err) {
                 res.send("could not save question");

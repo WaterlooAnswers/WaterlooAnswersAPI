@@ -11,7 +11,8 @@ var categories = [
 'Parties/Student Life',
 'Programming',
 'Residence',
-'Technology/Startups'];
+'Technology/Startups',
+'Other'];
 
 
 var questionSchema = mongoose.Schema({
