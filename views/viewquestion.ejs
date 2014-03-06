@@ -14,21 +14,24 @@
 
 	  $("#up").click(function(){
 	  	if(enabled){
-	    	$.get("/upvote", {qid: quest});
-	    	$(this).addClass('upped');
-	    	$("#down").removeAttr('id');
-	    	enabled = false;
+	    	$.get("/upvote", {qid: quest}, function(){
+	    		$("#up").addClass('upped');
+	    		$("#down").removeAttr('id');
+	    		enabled = false;
+	    		$(".votes").html(parseInt($('.votes').html(),10)+1);
+	    	});
 		}
 	  });
 	  $("#down").click(function(){
 	  	if(enabled){
-	    	$.get("/downvote", {qid: quest});
-	    	$(this).addClass('downed');
-	    	$("#up").removeAttr('id');
-	    	enabled = false;
+	    	$.get("/downvote", {qid: quest}, function(){
+	    		$("#down").addClass('downed');
+	    		$("#up").removeAttr('id');
+	    		enabled = false;	
+	    		$(".votes").html(parseInt($('.votes').html(),10)-1);    		
+	    	});
 		}
 	  });
-
 	});
 	</script>
 </head>
@@ -43,8 +46,8 @@
 <div class="page-header"><h1><%=question.name%></h1></div>
 <p><em>Asked by <%=question.asker.firstName %></em></p>
 
-<div class="row"><div class="col-md-1"><span class="fa fa-thumbs-o-up" id="up"></span><br>
-<span class="fa fa-thumbs-o-down" id="down"></div></span><div class=""><%=question.text%></div></div>
+<div class="row"><div class="col-md-1"><span class="fa fa-arrow-circle-up" id="up"></span><br><span class="votes" style="font-size: 20px"><%= question.votes%></span><br>
+<span class="fa fa-arrow-circle-down" id="down"></div></span><div class=""><%=question.text%></div></div>
 
 
 

@@ -5,10 +5,12 @@ span {
 
 #up:hover, .upped{
 	color:green;
+	cursor: pointer;
 }
 
 #down:hover, .downed{
 	color:red;
+	cursor: pointer;
 }
 
 .row div{
