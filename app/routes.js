@@ -1,25 +1,21 @@
 var Question = require('../models/question');
 var Answer = require('../models/answer');
+global.userCount = 0;
 
 module.exports = function(app, passport){
 
-	    app.get('/', function(req, res) {
-            if(req.isAuthenticated()){
-              res.redirect('/home');
-            }else{
-              res.redirect('/login');
-            }
-        });
+	app.get('/', isLoggedIn, function(req, res) {  
+    res.render('index.ejs', {user: req.user});
+  });
 
         app.get("/upvote", function(req, res){
-
-          console.log(req.query.qid);
-          //persist to databse
-              Question.findByIdAndUpdate(req.query.qid, {$inc: {votes: 1}}, function(err, question){
-               if(err)console.log("could not update votes");
-               console.log(question.votes.toString());
-               res.end();
-              });
+          Question.findByIdAndUpdate(req.query.qid, {$inc: {votes: 1}}, function(err, question){
+               if(err){
+                res.send("error");
+               }else{
+                res.send("upsuccess");
+               }
+          });
         });
 
         app.get("/downvote", function(req, res){
@@ -36,46 +32,43 @@ module.exports = function(app, passport){
         });
 
         app.get('/ask', isLoggedIn, function(req, res) {
-          res.render('addquestion', {user: req.user, cats :Question.schema.path('category').enumValues});   
+          res.render('addquestion', {cats :Question.schema.path('category').enumValues});   
         });
 
         app.get('/learn', isLoggedIn, function(req, res){
           Question.find({}, function(err, questions){
-            res.render('listquestions', {questions: questions, user: req.user});
+            res.render('listquestions', {questions: questions});
             });
         });
 
         app.get('/answer', isLoggedIn, function(req, res){
-          Question.find({}, function(err, questions){
-            res.render('listquestions', {questions: questions, user:req.user});
+          Question.find().populate('asker','firstName').exec(function(err,questions){
+            res.render('listquestions', {questions: questions});
             });
         });
 
-        app.get('/viewquestion', isLoggedIn, function(req, res){
-          Question.findById(req.query.id).populate('answers').populate('asker', 'firstName').exec(function(err, q){
-            res.render('viewquestion', {user: req.user, question: q, message: req.flash('info')});
+        app.get('/viewquestion/*', isLoggedIn, function(req, res){
+          var id = req.url.split('/')[2];
+          console.log(req.url);
+          console.log(id);
+          Question.findById(id).populate('answers').populate('asker', 'firstName').exec(function(err, q){
+            console.log(q);
+            res.render('viewquestion', {question: q, message: req.flash('info')});
           });
         });
 
-        app.get('/addanswer', isLoggedIn, function(req, res){
+        /*app.get('/addanswer', isLoggedIn, function(req, res){
           Question.findById(req.query.id).populate('answers').exec(function(err, q){
-            res.render('addanswer', {question: q, user: req.user});
+            res.render('addanswer', {question: q});
           });
-        });
+        });*/
 
         app.get('/signup', function(req, res){
           res.render('signup.ejs', {message: req.flash('signupMessage')});
         });
 
-        app.get('/home', isLoggedIn, function(req, res){
-          res.render('index.ejs', {user: req.user});
-        });
-
-        app.get('/loginsuccess', function(req, res){
-          res.render('index.ejs', {user: req.user});
-        });
-
         app.get('/logout', function(req,res){
+          userCount--;
           req.logout();
           res.redirect('/');
         });
@@ -83,23 +76,34 @@ module.exports = function(app, passport){
         app.get('/profile', isLoggedIn, function(req, res){
           console.log(req);
           Question.find({'asker': req.user._id}, function(err, docs){
-            res.render('profile', {user: req.user, questions: docs});
+            res.render('profile', {questions: docs});
           });
           
         });
 
 
+        Question.schema.path('category').enumValues.forEach(function(entry){
+          var val = entry.replace(/[^a-zA-Z0-9]/g, '');
+          app.get('/category/'+ val, isLoggedIn, function(req,res){
+            Question.find({category: entry}).populate('asker','firstName').exec(function(err,questions){
+              res.render('listcategory', {category: entry, questions: questions, user:req.user});
+            });
+          });
+        });
+
+
         app.post('/signup', passport.authenticate('local-signup', {
-          successRedirect : '/loginsuccess', // redirect to the secure profile section
+          successRedirect : '/home', // redirect to the secure profile section
           failureRedirect : '/signup', // redirect back to the signup page if there is an error
           failureFlash : true // allow flash messages
         }));
 
         app.post('/login', passport.authenticate('local-login', {
-          failureRedirect : '/loginfail', // redirect back to the signup page if there is an error
+          failureRedirect : '/login', // redirect back to the signup page if there is an error
           failureFlash : true, // allow flash messages
           session: true
         }), function(req,res){
+          userCount++;
           res.render('index.ejs', {user: req.user});
         });
   
@@ -115,7 +119,7 @@ module.exports = function(app, passport){
               };
               res.location('/viewquestion');
               req.flash('info', 'Question added successfully!');
-              res.redirect('/viewquestion?id='+q1._id);
+              res.redirect('/viewquestion/'+q1._id);
             });
         });
 
@@ -129,7 +133,7 @@ module.exports = function(app, passport){
                console.log(question.answers.toString());
               res.location('/viewquestion');
               req.flash('info', 'Answer added successfully!');
-              res.redirect('/viewquestion?id=' + qid);
+              res.redirect('/viewquestion/' + qid);
               });
             });
         });
@@ -143,6 +147,8 @@ module.exports = function(app, passport){
 
     function isLoggedIn(req, res, next){
       if(req.isAuthenticated()){
+        res.locals.user = req.user;
+        res.locals.userCount = userCount;
         return next();
       }
       console.log(req.user);

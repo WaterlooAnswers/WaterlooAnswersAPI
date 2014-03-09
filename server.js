@@ -7,35 +7,13 @@ var passport = require('passport');
 var flash    = require('connect-flash');
 var Question = require('./models/question');
 var Answer = require('./models/answer');
+var settings = require('./config/settings');
 
 
 var SampleApp = function() {
 
     //  Scope.
     var self = this;
-
-    /**
-     *  Set up server IP address and port # using env variables/defaults.
-     */
-    self.setupVariables = function() {
-        //  Set the environment variables we need.
-        self.ipaddress = process.env.OPENSHIFT_NODEJS_IP;
-        self.port      = process.env.OPENSHIFT_NODEJS_PORT || 8080;
-
-        if(process.env.OPENSHIFT_MONGODB_DB_PASSWORD){
-          self.connection_string = 'mongodb://admin:hUQubExw-mK_@127.10.3.2:27017/sj';
-        }else{
-          self.connection_string = "mongodb://localhost/mfnadb";
-        }
-
-        if (typeof self.ipaddress === "undefined") {
-            //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
-            //  allows us to run/test the app locally.
-            console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
-            self.ipaddress = "127.0.0.1";
-        };
-    };
-
 
     /**
      *  terminator === the termination handler
@@ -76,8 +54,12 @@ var SampleApp = function() {
         self.app = express();
         self.app.use(express.urlencoded());
         self.app.use(express.logger('dev'));
+		var MongoStore = require('connect-mongo')(express);
         self.app.use(express.cookieParser());
-        self.app.use(express.session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+        self.app.use(express.session({
+        	store: new MongoStore({url: settings.connection_string}),
+        	secret: 'ilovescotchscotchyscotchscotch' 
+        })); // session secret
         self.app.use(passport.initialize());
         self.app.use(passport.session()); // persistent login sessions
         self.app.use(flash()); // use connect-flash for flash messages stored in session
@@ -86,30 +68,20 @@ var SampleApp = function() {
 
         require('./app/routes.js')(self.app, passport);
         require('./config/passport')(passport);
-        require('./config/database')(self.connection_string);
+        require('./config/database')(settings.connection_string);
 
     };
 
-    /**
-     *  Initializes the sample application.
-     */
     self.initialize = function() {
-        self.setupVariables();
         self.setupTerminationHandlers();
-
-        // Create the express server and routes.
+        settings.init();
         self.initializeServer();
     };
 
-
-    /**
-     *  Start the server (starts up the sample application).
-     */
     self.start = function() {
         //  Start the app on the specific interface (and port).
-        self.app.listen(self.port, self.ipaddress, function() {
-            console.log('%s: Node server started on %s:%d ...',
-                        Date(Date.now() ), self.ipaddress, self.port);
+        self.app.listen(settings.port, settings.ipaddress, function() {
+            console.log('%s: Node server started on %s:%d ...', Date(Date.now() ), settings.ipaddress, settings.port);
         });
     };
 

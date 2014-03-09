@@ -2,9 +2,9 @@
 <html>
 <head>
 	<title>Hey</title>
-	<link href="stylesheets/bootstrap.css" rel="stylesheet">
+	<link href="/stylesheets/bootstrap.css" rel="stylesheet">
 		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
-	<link rel="stylesheet" href="stylesheets/viewq.css">
+	<link rel="stylesheet" href="/stylesheets/viewq.css">
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
 	</script>
 	<script>
@@ -46,8 +46,12 @@
 <div class="page-header"><h1><%=question.name%></h1></div>
 <p><em>Asked by <%=question.asker.firstName %></em></p>
 
-<div class="row"><div class="col-md-1"><span class="fa fa-arrow-circle-up" id="up"></span><br><span class="votes" style="font-size: 20px"><%= question.votes%></span><br>
-<span class="fa fa-arrow-circle-down" id="down"></div></span><div class=""><%=question.text%></div></div>
+<div id="fav"><span class="fa fa-star-o" id="fav"></span><br>
+	<span class="votes" style="font-size: 20px"><%= question.votes%></span>
+</div>
+
+
+<div class="row"><div class=""><%=question.text%></div></div>
 
 
 

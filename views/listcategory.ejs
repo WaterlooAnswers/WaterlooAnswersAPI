@@ -15,14 +15,14 @@
 <% include navbar-loggedin %>
 
 <div class="container">
-<div class="page-header"><h1>Questions</h1></div>
+<div class="page-header"><h1><%= category %></h1></div>
 <div class="row">
-  <div class="col-lg-10 col-lg-offset-1">
+  <div class="col-lg-6">
   <ul class="list-group">
   <% questions.forEach(function(entry){ %>
   <li class="list-group-item">
     <span class="badge"><% if(entry.answers[0]){ %> <%=entry.answers.length%> <%}else{%>0<%}%></span>
-  <a href="/viewquestion/<%=entry._id%>"><h3 style="margin-top:0px"><%= entry["name"] %></h3></a> <p> <%= entry.text %></p> <div class="small">Asked by <a href="/profile"><%= entry.asker.firstName%></a> in <a href="/category/<%= entry.category.replace(/[^a-zA-Z0-9]/g, '')%>"><%= entry.category%></a> <time class="timeago" datetime="<%= entry.time.toISOString()%>"></time></div></li>
+  <a href="/viewquestion?id=<%=entry._id%>"><h2 style="margin-top:0px"><%= entry["name"] %></h2></a> <p> <%= entry.text %></p> <div class="small">Asked by <a><%= entry.asker.firstName%></a> in <a><%= entry.category%></a> <time class="timeago" datetime="<%= entry.time.toISOString()%>"></time></div></li>
   <%}); %>
   </ul>
   </div>
@@ -30,8 +30,8 @@
   </div>
 
 
-  <script src="js/jquery.min.js" type="text/javascript"></script>
-  <script src="js/jquery.timeago.js" type="text/javascript"></script>
+  <script src="/js/jquery.min.js" type="text/javascript"></script>
+  <script src="/js/jquery.timeago.js" type="text/javascript"></script>
   <script>
     $(document).ready(function() {
     $("time.timeago").timeago();
