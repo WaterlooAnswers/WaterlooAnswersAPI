@@ -12,26 +12,6 @@
 	var enabled = true;
 	$(document).ready(function(){
 
-	  $("#up").click(function(){
-	  	if(enabled){
-	    	$.get("/upvote", {qid: quest}, function(){
-	    		$("#up").addClass('upped');
-	    		$("#down").removeAttr('id');
-	    		enabled = false;
-	    		$(".votes").html(parseInt($('.votes').html(),10)+1);
-	    	});
-		}
-	  });
-	  $("#down").click(function(){
-	  	if(enabled){
-	    	$.get("/downvote", {qid: quest}, function(){
-	    		$("#down").addClass('downed');
-	    		$("#up").removeAttr('id');
-	    		enabled = false;	
-	    		$(".votes").html(parseInt($('.votes').html(),10)-1);    		
-	    	});
-		}
-	  });
 	});
 	</script>
 </head>

@@ -20,7 +20,7 @@
     <div class="row">
       <div class="col-lg-10 col-lg-offset-1">
         <ul class="nav nav-pills text-center">
-        <li class=""><a href="/answer/?tab=recent">Most Recent</a></li>
+        <li><a href="/answer/?tab=recent">Most Recent</a></li>
         <li><a href="/answer/?tab=topfav">Most Favourited</a></li>
         <li><a href="/answer/?tab=viewcategories">View Categories</a></li>
         </ul>
@@ -42,6 +42,7 @@
     <script>
       $(document).ready(function() {
         $("time.timeago").timeago();
+        $("li:nth-of-type(<%=n%>)").addClass('active');
       });
     </script>
   </body>

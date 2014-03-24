@@ -45,13 +45,13 @@ module.exports = function(server, passport){
   app.get('/answer', isLoggedIn, function(req, res){
     if(req.query.tab === "topfav"){
       Question.find().populate('asker','firstName').sort({favourites: -1}).exec(function(err,questions){
-        res.render('listquestions', {questions: questions});
+        res.render('listquestions', {questions: questions, n:2});
       });
     }else if(req.query.tab === "viewcategories"){
-        res.render('viewcategories', {categories: Question.schema.path('category').enumValues});
+        res.render('viewcategories', {categories: Question.schema.path('category').enumValues, n:3});
     }else{
       Question.find().populate('asker','firstName').sort({time: -1}).exec(function(err,questions){
-        res.render('listquestions', {questions: questions});
+        res.render('listquestions', {questions: questions, n:1});
       });
     }
 
