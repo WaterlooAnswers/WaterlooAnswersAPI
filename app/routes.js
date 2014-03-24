@@ -36,6 +36,8 @@ module.exports = function(server, passport){
     res.render('addquestion', {cats :Question.schema.path('category').enumValues});   
   });
 
+  //heyy
+
   /*app.get('/learn', isLoggedIn, function(req, res){
     Question.find({}, function(err, questions){
       res.render('listquestions', {questions: questions});
