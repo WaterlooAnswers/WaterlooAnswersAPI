@@ -66,7 +66,7 @@ var SampleApp = function() {
         self.app.set('view engine', 'ejs');
         self.app.use(express.static(__dirname + '/public'));
 
-        require('./app/routes.js')(self.app, passport);
+        require('./app/routes.js')(self, passport);
         require('./config/passport')(passport);
         require('./config/database')(settings.connection_string);
 
@@ -83,6 +83,7 @@ var SampleApp = function() {
         self.app.listen(settings.port, settings.ipaddress, function() {
             console.log('%s: Node server started on %s:%d ...', Date(Date.now() ), settings.ipaddress, settings.port);
         });
+
     };
 
 };

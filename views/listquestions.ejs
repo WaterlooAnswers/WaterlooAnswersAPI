@@ -1,41 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Hey</title>
+	<title>Questions</title>
 	<link href="/stylesheets/bootstrap.css" rel="stylesheet">
   <style>
-  .badge:after{
-    content: " answers"
-  }
+    .badge:after{
+      content: " answers"
+    }
   </style>
 
 </head>
 <body>
 
-<% include navbar-loggedin %>
+  <% include navbar-loggedin %>
 
-<div class="container">
-<div class="page-header"><h1>Questions</h1></div>
-<div class="row">
-  <div class="col-lg-10 col-lg-offset-1">
-  <ul class="list-group">
-  <% questions.forEach(function(entry){ %>
-  <li class="list-group-item">
-    <span class="badge"><% if(entry.answers[0]){ %> <%=entry.answers.length%> <%}else{%>0<%}%></span>
-  <a href="/viewquestion/<%=entry._id%>"><h3 style="margin-top:0px"><%= entry["name"] %></h3></a> <p> <%= entry.text %></p> <div class="small">Asked by <a href="/profile"><%= entry.asker.firstName%></a> in <a href="/category/<%= entry.category.replace(/[^a-zA-Z0-9]/g, '')%>"><%= entry.category%></a> <time class="timeago" datetime="<%= entry.time.toISOString()%>"></time></div></li>
-  <%}); %>
-  </ul>
-  </div>
-  </div>
-  </div>
+  <div class="container">
+    <div class="page-header"><h1>Questions</h1></div>
+
+    <div class="row">
+      <div class="col-lg-10 col-lg-offset-1">
+        <ul class="nav nav-pills text-center">
+        <li class=""><a href="/answer/?tab=recent">Most Recent</a></li>
+        <li><a href="/answer/?tab=topfav">Most Favourited</a></li>
+        <li><a href="/answer/?tab=viewcategories">View Categories</a></li>
+        </ul>
+        <br>
+        <ul class="list-group">
+          <% questions.forEach(function(entry){ %>
+          <li class="list-group-item">
+            <span class="badge"><% if(entry.answers[0]){ %> <%=entry.answers.length%> <%}else{%>0<%}%></span>
+            <a href="/viewquestion/<%=entry._id%>"><h3 style="margin-top:0px"><%= entry["name"] %></h3></a> <p> <%= entry.text %></p> <div class="small">Asked by <a href="/profile"><%= entry.asker.firstName%></a> in <a href="/category/<%= entry.category.replace(/[^a-zA-Z0-9]/g, '')%>"><%= entry.category%></a> <time class="timeago" datetime="<%= entry.time.toISOString()%>"></time></div></li>
+            <%}); %>
+          </ul>
+        </div>
+      </div>
+    </div>
 
 
-  <script src="js/jquery.min.js" type="text/javascript"></script>
-  <script src="js/jquery.timeago.js" type="text/javascript"></script>
-  <script>
-    $(document).ready(function() {
-    $("time.timeago").timeago();
-    });
-  </script>
-</body>
-</html>
+    <script src="/js/jquery.min.js" type="text/javascript"></script>
+    <script src="/js/jquery.timeago.js" type="text/javascript"></script>
+    <script>
+      $(document).ready(function() {
+        $("time.timeago").timeago();
+      });
+    </script>
+  </body>
+  </html>

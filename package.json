@@ -32,7 +32,8 @@
     "passport-local": "latest",
     "connect-flash": "latest",
     "connect-mongo" : "latest",
-    "bcrypt-nodejs": "latest"
+    "bcrypt-nodejs": "latest",
+    "socket.io": "latest"
   },
   "devDependencies": {},
   "bundleDependencies": [],
