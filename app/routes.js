@@ -82,7 +82,7 @@ app.get('/logout', function(req,res){
 app.get('/profile', isLoggedIn, function(req, res){
   console.log(req);
   Question.find({'asker': req.user._id}, function(err, docs){
-    res.render('profile', {questions: docs});
+    res.render('profile', {questions: docs, user: req.user});
   });
 });
 
