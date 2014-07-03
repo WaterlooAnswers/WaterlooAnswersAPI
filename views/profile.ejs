@@ -8,15 +8,6 @@
 
 <% include navbar-loggedin %>
 
-<div class="container">
-  <div class="page-header"><h1>Questions you've asked:</h1></div>
-  <% questions.forEach(function(entry){ %>
-    <p> <a href="/viewquestion?id=<%=entry._id%>"><%= entry.name %></a></p>
-  <%});%>
-
-</div>
-
-
 <div class="container col-md-8 col-md-offset-2">
 
     <div class="panel panel-default ">
@@ -26,8 +17,13 @@
         <div>
           <ul><b>Email: </b><%= user.email %>
           <br></ul>   
-          <ul><b>Name: </b> Aditya Sridhar</ul>
-
+          <ul><b>Questions you've asked:</b><br>
+            <div style="padding-left: 20px;">
+            	<% questions.forEach(function(entry){ %>
+    			<a href="/viewquestion?id=<%=entry._id%>"><%= entry.name %></a><br>
+  				<%});%>
+            </div>
+  		</ul>
         </div>
         
       </div>
