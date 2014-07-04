@@ -1,5 +1,6 @@
 var Question = require('../models/question');
 var Answer = require('../models/answer');
+var User = require('../models/user');
 
 module.exports = function(server, passport){
 
@@ -78,11 +79,21 @@ app.get('/logout', function(req,res){
   req.logout();
   res.redirect('/');
 });
-
-app.get('/profile', isLoggedIn, function(req, res){
-  console.log(req);
-  Question.find({'asker': req.user._id}, function(err, docs){
-    res.render('profile', {questions: docs, user: req.user});
+  app.get('/profileRedirect', isLoggedIn, function(req, res) {
+    res.redirect('/profile/' + req.user._id);
+  });
+app.get('/profile/*', isLoggedIn, function(req, res){
+  var profile_id = req.url.split("/")[2];
+  var question;
+  User.findById(profile_id).exec(function(err,doc){
+    if(!err){
+      console.log(doc);
+    Question.find({'asker': doc._id}, function(err, docs){
+      console.log(docs);
+      res.render('profile', {questions: docs, user: doc});
+      });
+      res.render('profile', {questions: question, user: doc});
+    }
   });
 });
 

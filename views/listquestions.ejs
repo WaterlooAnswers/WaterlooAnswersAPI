@@ -29,7 +29,7 @@
           <% questions.forEach(function(entry){ %>
           <li class="list-group-item">
             <span class="badge"><% if(entry.answers[0]){ %> <%=entry.answers.length%> <%}else{%>0<%}%></span>
-            <a href="/viewquestion/<%=entry._id%>"><h3 style="margin-top:0px"><%= entry["name"] %></h3></a> <p> <%= entry.text %></p> <div class="small">Asked by <a href="/profile"><%= entry.asker.firstName%></a> in <a href="/category/<%= entry.category.replace(/[^a-zA-Z0-9]/g, '')%>"><%= entry.category%></a> <time class="timeago" datetime="<%= entry.time.toISOString()%>"></time></div></li>
+            <a href="/viewquestion/<%=entry._id%>"><h3 style="margin-top:0px"><%= entry["name"] %></h3></a> <p> <%= entry.text %></p> <div class="small">Asked by <a href="/profileRedirect"><%= entry.asker.firstName%></a> in <a href="/category/<%= entry.category.replace(/[^a-zA-Z0-9]/g, '')%>"><%= entry.category%></a> <time class="timeago" datetime="<%= entry.time.toISOString()%>"></time></div></li>
             <%}); %>
           </ul>
         </div>
