@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>Hey</title>
-	<link href="stylesheets/bootstrap.css" rel="stylesheet">
+	<link href="/stylesheets/bootstrap.css" rel="stylesheet">
 </head>
 <body>
 
@@ -17,13 +17,7 @@
         <div>
           <ul><b>Email: </b><%= user.email %>
           <br></ul>   
-          <ul><b>Questions you've asked:</b><br>
-            <div style="padding-left: 20px;">
-            	<% questions.forEach(function(entry){ %>
-    			<a href="/viewquestion/<%=entry._id%>"><%= entry.name %></a><br>
-  				<%});%>
-            </div>
-  		</ul>
+
         </div>
         
       </div>

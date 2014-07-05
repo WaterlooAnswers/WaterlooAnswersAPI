@@ -84,19 +84,22 @@ app.get('/logout', function(req,res){
   });
 app.get('/profile/*', isLoggedIn, function(req, res){
   var profile_id = req.url.split("/")[2];
+  console.log(profile_id);
   var question;
-  User.findById(profile_id).exec(function(err,doc){
+  User.findById(req.user._id).exec(function(err,doc){
     if(!err){
       console.log(doc);
-    Question.find({'asker': doc._id}, function(err, docs){
+      res.render('profile', {user: doc});
+   /* Question.find({'asker': doc._id}, function(err, docs){
       console.log(docs);
       res.render('profile', {questions: docs, user: doc});
       });
       res.render('profile', {questions: question, user: doc});
     }
-  });
+  });*/
+}
 });
-
+});
 Question.schema.path('category').enumValues.forEach(function(entry){
   var val = entry.replace(/[^a-zA-Z0-9]/g, '');
   app.get('/category/'+ val, isLoggedIn, function(req,res){
