@@ -90,16 +90,31 @@ app.get('/profile/*', isLoggedIn, function(req, res){
     if(!err){
       console.log(doc);
       //res.render('profile', {user: doc});
-    Question.find({'asker': doc._id}, function(err, docs){
-      console.log(docs);
-      //question = doc;
-      res.render('profile', {questions: docs, user: doc});
-      });
-      console.log(question);
-      //res.render('profile', {questions: question, user: doc});
-    }
+      Question.find({'asker': doc._id}, function(err, docs){
+          console.log(docs);
+          question = docs;
+          Answer.find({'answerer': doc._id}, function(err, docss){
+          //console.log(docs);
+            answer = docss;
+            res.render('profile', {
+              questions: question,
+              answers: answer,
+              user: doc});
+            });
+    
+        //res.render('profile', {questions: question, user: doc});
+        });
+      }
   });
 });
+
+
+
+
+
+
+
+
 Question.schema.path('category').enumValues.forEach(function(entry){
   var val = entry.replace(/[^a-zA-Z0-9]/g, '');
   app.get('/category/'+ val, isLoggedIn, function(req,res){
