@@ -17,7 +17,14 @@
         <div>
           <ul><b>Email: </b><%= user.email %>
           <br></ul>   
-
+          <ul><b>Questions asked:</b><br>
+            <div style="padding-left: 20px;">
+              <% questions.forEach(function(entry){ %>
+                <a href="/viewquestion/<%=entry._id%>"><%= entry.name %></a><br>
+              <%});%>
+            </div>
+          </ul>
+     
         </div>
         
       </div>

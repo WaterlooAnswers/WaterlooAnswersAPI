@@ -85,20 +85,20 @@ app.get('/logout', function(req,res){
 app.get('/profile/*', isLoggedIn, function(req, res){
   var profile_id = req.url.split("/")[2];
   console.log(profile_id);
-  var question;
+  var question = [];
   User.findById(req.user._id).exec(function(err,doc){
     if(!err){
       console.log(doc);
-      res.render('profile', {user: doc});
-   /* Question.find({'asker': doc._id}, function(err, docs){
+      //res.render('profile', {user: doc});
+    Question.find({'asker': doc._id}, function(err, docs){
       console.log(docs);
+      //question = doc;
       res.render('profile', {questions: docs, user: doc});
       });
-      res.render('profile', {questions: question, user: doc});
+      console.log(question);
+      //res.render('profile', {questions: question, user: doc});
     }
-  });*/
-}
-});
+  });
 });
 Question.schema.path('category').enumValues.forEach(function(entry){
   var val = entry.replace(/[^a-zA-Z0-9]/g, '');
