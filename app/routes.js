@@ -109,12 +109,6 @@ app.get('/profile/*', isLoggedIn, function(req, res){
 });
 
 
-
-
-
-
-
-
 Question.schema.path('category').enumValues.forEach(function(entry){
   var val = entry.replace(/[^a-zA-Z0-9]/g, '');
   app.get('/category/'+ val, isLoggedIn, function(req,res){
