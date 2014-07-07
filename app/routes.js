@@ -54,11 +54,10 @@ module.exports = function(server, passport){
         res.render('viewcategories', {categories: Question.schema.path('category').enumValues, n:3});
     }else{
       Question.find().populate('asker','firstName').sort({time: -1}).exec(function(err,questions){
+        console.log(questions);
         res.render('listquestions', {questions: questions, n:1});
       });
     }
-
-    
   });
 
   app.get('/viewquestion/*', isLoggedIn, function(req, res){
@@ -86,7 +85,7 @@ app.get('/profile/*', isLoggedIn, function(req, res){
   var profile_id = req.url.split("/")[2];
   console.log(profile_id);
   var question = [];
-  User.findById(req.user._id).exec(function(err,doc){
+  User.findById(profile_id).exec(function(err,doc){
     if(!err){
       console.log(doc);
       //res.render('profile', {user: doc});
