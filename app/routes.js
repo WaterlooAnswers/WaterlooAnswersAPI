@@ -60,12 +60,34 @@ module.exports = function(server, passport){
     }
   });
 
+  var getUserById = function(users){
+    users.forEach(function(user){
+      user_id = user.answerer;
+      answererObj = new Object();
+      console.log(user_id);
+      User.findById(user_id).exec(function(err, u){
+        console.log(u);
+        answererObj[u._id] = u.firstName;
+        console.log("ansssss");
+        console.log(answererObj);
+        //answererObj.push({u._id : u.firstName});
+      });
+    });
+    setTimeout(function(){
+          return answererObj;
+    }, 0);
+  }
+
   app.get('/viewquestion/*', isLoggedIn, function(req, res){
     var id = req.url.split('/')[2];
     console.log(req.url);
     console.log(id);
-    Question.findById(id).populate('answers').populate('asker', 'firstName').exec(function(err, q){
+    Question.findById(id).populate('answers').populate('asker').exec(function(err, q){
+      console.log("f");
       console.log(q);
+      var x = getUserById(q.answers);
+      console.log("x");
+      console.log(x);
       res.render('viewquestion', {question: q, message: req.flash('info')});
     });
   });

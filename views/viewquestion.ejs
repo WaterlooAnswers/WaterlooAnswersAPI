@@ -23,54 +23,31 @@
 	<div class="alert alert-success"><%= message %></div>
 <% } %>
 
-<div class="page-header"><h1><%=question.name%></h1></div>
-<p><em>Asked by <a href="/profile/<%=question.asker._id%>"><%=question.asker.firstName %></a></em></p>
+<div class="panel panel-primary">
+  <div class="panel-heading">
+  	<h2><%=question.name%></h2>
+  </div>
+  <div class="panel-body">
+    <%=question.text%>
+  </div>
+  <div class="panel-footer"><em>Asked by <a href="/profile/<%=question.asker._id%>"><%=question.asker.firstName %></a></em></div>
+</div>
+<hr>
 
 <!--<div id="fav"><span class="fa fa-star-o" id="fav"></span><br>
 	<span class="votes" style="font-size: 20px"><%= question.votes%></span>
 </div>-->
-
-
-<div class="row"><div class=""><%=question.text%></div></div>
-
-<h3>Current Answers: </h3>
 <% if(question.answers[0]){ 
   question.answers.forEach(function(entry){%>
+  				<%= entry %>
 
-				<div class="panel panel-default">
-
-					<a data-toggle="collapse" data-parent="#accordion">
-						<div class="panel-heading">
-							<h1 class="panel-title" style="color:black">
-								<%= entry.text%>
-							</h1>
-						</div>
-					</a>
-					<div>
-						<div class="panel-body" style="padding:22px; text-align:justify">
-							entry.description
-							<br></br>
-							<span style="color: #AAAAB3">Created</span> <time class="timeago" datetime="entry.dateCreated.toISOString()" style="color: #AAAAB3"></time>
-							<div class="row", style="float:right">
-								<div class="col-xs-4">
-									<a href="/viewproject/entry.id">
-										<button type="button" class="btn btn-primary btn-sm" >More Info <span class = "glyphicon glyphicon-circle-arrow-right"></span> </button>
-									</a>
-								</div>
-
-								<div class="col-xs-4">
-									<a href="/editproject/entry.id%">
-										<button type="button" class="btn btn-warning btn-sm" >Edit <span class = "glyphicon glyphicon-pencil"></span> </button>
-									</a>
-								</div>
-
-								<div class="col-xs-4">
-										<button type="button" id="entry.id%" class="btn btn-danger btn-sm delete" >Delete <span class = "glyphicon glyphicon-remove"></span> </button>
-									</a>
-								</div>
-							</div>
-						</div>
-					</div>
+  				<div class="panel panel-primary">
+  					<div class="panel-body">
+    					<%= entry.text%>
+  					</div>
+  					<div class="panel-footer">\
+  						<span style="color: #AAAAB3">Created</span> <time class="timeago" datetime="entry.dateCreated.toISOString()" style="color: #AAAAB3"></time>
+  					</div>
 				</div>
 
   
