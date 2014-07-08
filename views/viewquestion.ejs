@@ -39,14 +39,12 @@
 </div>-->
 <% if(question.answers[0]){ 
   question.answers.forEach(function(entry){%>
-  				<%= entry %>
-
   				<div class="panel panel-primary">
   					<div class="panel-body">
     					<%= entry.text%>
   					</div>
-  					<div class="panel-footer">\
-  						<span style="color: #AAAAB3">Created</span> <time class="timeago" datetime="entry.dateCreated.toISOString()" style="color: #AAAAB3"></time>
+  					<div class="panel-footer">
+  						<span style="color: #AAAAB3">Created by <a href="/profile/<%=entry.answerer%>"><%= entry.answererName%></a></span> <time class="timeago" datetime="entry.dateCreated.toISOString()" style="color: #AAAAB3"></time>
   					</div>
 				</div>
 
