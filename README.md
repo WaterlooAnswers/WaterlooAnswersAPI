@@ -1,1 +1,1 @@
-This is a program made by Sahil Jain.
+This is a Node.js project created by @sahiljain and @addysridhar95
