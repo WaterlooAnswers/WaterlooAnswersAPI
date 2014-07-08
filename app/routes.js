@@ -10,7 +10,7 @@ module.exports = function(server, passport){
     res.render('index.ejs', {user: req.user});
   });
 
-  app.get("/upvote", function(req, res){
+  app.get("/upvote", isLoggedIn, function(req, res){
     Question.findByIdAndUpdate(req.query.qid, {$inc: {votes: 1}}, function(err, question){
       if(err){
         res.send("error");
@@ -20,7 +20,7 @@ module.exports = function(server, passport){
     });
   });
 
-  app.get("/downvote", function(req, res){
+  app.get("/downvote", isLoggedIn, function(req, res){
     //persist to databse
     Question.findByIdAndUpdate(req.query.qid, {$inc: {votes: -1}}, function(err, question){
      if(err)console.log("could not update votes");
@@ -133,7 +133,7 @@ app.post('/login', passport.authenticate('local-login', {
           session: true
         }));
 
-app.post('/ask', function(req,res){
+app.post('/ask', isLoggedIn, function(req,res){
   var question = req.body.question.toString();
   var text = req.body.text.toString();
   var asker = req.user.id;
@@ -149,7 +149,7 @@ app.post('/ask', function(req,res){
   });
 });
 
-app.post('/addanswer/*', function(req,res){
+app.post('/addanswer/*', isLoggedIn, function(req,res){
   var question = req.url.split('/')[2].replace(/%20/g, " ");
   var text = req.body.text.toString();
   var ans = new Answer({answerer: req.user.id, question: req.body.questionid, questionName: question, answererName: req.user.firstName, text: text});
