@@ -29,11 +29,12 @@
           </ul>
           <% } %>
           <% if (answers.length != 0){ %>
-          <ul><b>Answers answered:</b><br>
+          <ul><b>Questions answered:</b><br>
             <div style="padding-left: 20px;">
               <% answers.forEach(function(entry){ %>
-                <a href="/viewquestion/<%=entry._id%>"><%= entry.text %></a><br>
+                <a href="/viewquestion/<%=entry.question%>"><%=entry.questionName%></a><br>
               <%});%>
+    
             </div>
           </ul>  
           <%}%>   

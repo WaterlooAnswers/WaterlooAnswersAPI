@@ -90,14 +90,19 @@ app.get('/profile/*', isLoggedIn, function(req, res){
           console.log(docs);
           question = docs;
           Answer.find({'answerer': doc._id}, function(err, docss){
-          //console.log(docs);
+          console.log("docss");
+          console.log(docss);
+
             answer = docss;
-            res.render('profile', {
+            //Question.find({'asker': answer[0].question}, function(err, docsss){
+              //console.log(docsss);
+              res.render('profile', {
               questions: question,
               answers: answer,
+              //questionAnswered: docsss,
               user: doc});
             });
-    
+            //});
         //res.render('profile', {questions: question, user: doc});
         });
       }
@@ -144,9 +149,10 @@ app.post('/ask', function(req,res){
   });
 });
 
-app.post('/addanswer', function(req,res){
+app.post('/addanswer/*', function(req,res){
+  var question = req.url.split('/')[2].replace(/%20/g, " ");
   var text = req.body.text.toString();
-  var ans = new Answer({answerer: req.user.id, answererName: req.user.firstName,text: text});
+  var ans = new Answer({answerer: req.user.id, question: req.body.questionid, questionName: question, answererName: req.user.firstName, text: text});
   var qid = req.body.questionid;
   ans.save(function(err, ans1){
     Question.findByIdAndUpdate(qid, {$push: {answers: ans._id}}, function(err, question){
