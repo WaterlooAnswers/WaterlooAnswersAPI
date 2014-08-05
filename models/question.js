@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
-var categories = [
-'Admissions/Program Advice',
+
+global.questionCategories = [
+    'Admissions/Program Advice',
 'Campus Facilities',
 'Co-op/Jobmine',
 'Course Selection',
@@ -14,7 +15,6 @@ var categories = [
 'Technology/Startups',
 'Other'];
 
-
 var questionSchema = mongoose.Schema({
 	asker: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
 	name: String,
@@ -22,7 +22,7 @@ var questionSchema = mongoose.Schema({
 	text: String,
 	time : { type : Date, default: Date.now },
 	answers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Answer' }],
-	category: {type: String, enum: categories}
+    category: {type: String, enum: global.questionCategories}
 });
 
 // create the model for users and expose it to our app

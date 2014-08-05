@@ -1,43 +1,48 @@
 {
-  "name": "ASKUW-Alpha-1",
-  "version": "1.0.0",
-  "description": "A system to ask questions",
-  "keywords": [
-    "passportjs",
-    "Node.js",
-    "application",
-    "expressjs"
-  ],
-  "author": {
-    "name": "Sahil Jain",
-    "email": "sahil@sahiljain.ca",
-    "url": "http://www.sahiljain.ca"
-  },
-  "homepage": "http://ask.sahiljain.ca/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/openshift/origin-server"
-  },
+    "name": "ASKUW-Alpha-1",
+    "version": "1.0.0",
+    "description": "A system to ask questions",
+    "keywords": [
+        "passportjs",
+        "Node.js",
+        "application",
+        "expressjs"
+    ],
+    "author": {
+        "name": "Sahil Jain",
+        "email": "sahil@sahiljain.ca",
+        "url": "http://www.sahiljain.ca"
+    },
+    "homepage": "http://ask.sahiljain.ca/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/openshift/origin-server"
+    },
 
-  "engines": {
-    "node": ">= 0.6.0",
-    "npm": ">= 1.0.0"
-  },
+    "engines": {
+        "node": ">= 0.6.0",
+        "npm": ">= 1.0.0"
+    },
 
-  "dependencies": {
-    "express": "~3.4.4",
-    "ejs": "latest",
-    "mongoose":"latest",
-    "passport": "latest",
-    "passport-local": "latest",
-    "connect-flash": "latest",
-    "connect-mongo" : "latest",
-    "bcrypt-nodejs": "latest",
-    "socket.io": "latest"
-  },
-  "devDependencies": {},
-  "bundleDependencies": [],
+    "dependencies": {
+        "express": "latest",
+        "express-session": "latest",
+        "ejs": "latest",
+        "mongoose": "latest",
+        "mongodb": "latest",
+        "passport": "latest",
+        "passport-local": "latest",
+        "connect-flash": "latest",
+        "connect-mongo": "latest",
+        "bcrypt-nodejs": "latest",
+        "socket.io": "latest",
+        "body-parser": "latest",
+        "cookie-parser": "latest",
+        "morgan": "latest"
+    },
+    "devDependencies": {},
+    "bundleDependencies": [],
 
-  "private": true,
-  "main": "server.js"
+    "private": true,
+    "main": "server.js"
 }

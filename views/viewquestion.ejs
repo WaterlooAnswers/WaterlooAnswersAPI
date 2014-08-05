@@ -54,8 +54,9 @@
 
 
 <h3>Your Answer: </h3>
- <form action="/addanswer/<%=question.name%>" method="post">
- 	<input type="hidden" name="questionid" value="<%= question["_id"]%>">
+
+    <form action="/addanswer" method="post">
+    <input type="hidden" name="questionid" value="<%= question["_id"]%>">
     <input type="text" name="text"><br>
     <button type="submit" class="btn btn-success">Answer</button>
  </form>
