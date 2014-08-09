@@ -26,8 +26,9 @@ Log in.
 
 # Group Questions
 
-## Get a Single Question [/questions/{id}]
+## Question By ID [/questions/{id}]
 ## GET
+Get a single question by ID: 
 + Parameters
     + id (required, string, `5317e88ad5dcc70c283f450a`) ... ID of the question you want
 + Response 200 (application/json; charset=utf-8)
@@ -67,9 +68,17 @@ Log in.
             }
 
 ## DELETE
+Delete a single question by ID:
 + Parameters
     + id (required, string, `5317e88ad5dcc70c283f450a`) ... ID of the question you want to delete
 + Response 204
+
+## Add a Question [/questions/{?questionTitle,questionDescription,categoryIndex}]
+## POST
+Add a question to the database:
++ Parameters
+    + questionTitle (string, required, `My Question`) ... the title of the question
++ Response 200
 
 ## Upvote a question [/questions/{id}/upvote]
 ### PUT
