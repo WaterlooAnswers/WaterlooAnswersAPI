@@ -1,0 +1,180 @@
+FORMAT: 1A
+HOST: http://askuw.sahiljain.ca
+
+# WaterlooAnswers
+The WaterlooAnswers API is a university-wide answer service similar to Yahoo Answers.
+
+# WaterlooAnswers API Root [http://askuw.sahiljain.ca/api/]
+
+# Group Login Flow
+How to get a session token on login, and how to invalidate it on logout.
+<a id="login" ></a>
+
+## /login{?username,password}
+### POST
+Log in.
+
++ Parameters
+    + username (required, string, `abc`) ... account login email/username
+    + password (required, string, `123`) ... account password
++ Request (application/json)
+    + Headers
+    
+            Accept: application/json
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "sessionToken": "xyzxyzxyzxyzxyzyxyzx323"
+            }
+
+
+# Group Questions
+
+## Get a Single Question [/questions/{id}]
+## GET
++ Parameters
+    + id (required, string) ... ID of the question you want
++ Response 200 (application/json)
+    + Body
+    
+            {
+                questionId: "5331b06a5c1ad0f0bfa1f8cc",
+                name: "What course do I choose?",
+                description: "Chem or physics",
+                askerName: "sahil",
+                askerId: "5312dfedd9e81a00002e7c17",
+                askerEmail: "abc",
+                category: "Course Selection",
+                numAnswers: 3,
+                answers: [
+                    {
+                        answererId: "5312dfedd9e81a00002e7c17",
+                        text: "dfhfsz",
+                        answerId: "53e4f91207e37a00008f3658",
+                        timeAnswered: "2014-08-08T16:21:38.494Z"
+                    },
+                    {
+                        answererId: "5312dfedd9e81a00002e7c17",
+                        text: "dfsdfgzdfgsz",
+                        answerId: "53e4f91507e37a00008f3659",
+                        timeAnswered: "2014-08-08T16:21:41.809Z"
+                    },
+                    {
+                        answererId: "5312dfedd9e81a00002e7c17",
+                        text: "xfzcvbx",
+                        answerId: "53e4f91807e37a00008f365a",
+                        timeAnswered: "2014-08-08T16:21:44.043Z"
+                    }
+                ],
+                favourites: [ ],
+                timeAsked: "2014-03-25T16:35:54.021Z"
+            }
+
+## DELETE
++ Parameters
+    + id (required, string) ... ID of the question you want to delete
++ Response 204
+
+## Upvote a question [/questions/{id}/upvote]
+### PUT
++ Parameters
+    + id (required, string) ... ID of the question you want to upvote
++ Response 200 (application/json)
+    + Body 
+    
+            {
+                "success":true
+            }
+
+## Downvote a question [/questions/{id}/downvote]
+### PUT
++ Parameters
+    + id (required, string) ... ID of the question you want to downvote
++ Response 200 (application/json)
+    + Body 
+    
+            {
+                "success":true
+            }
+
+## Get a Set of Questions by parameters [/questions{?questionsPerPage,pageNumber,sortOrder,categoryId}]
+### GET
++ Parameters
+    + questionsPerPage (required, number) ... the number of questions you want to recieve
+    + pageNumber (required, number) ... the page of questions you want to recieve
+    + sortOrder (optional, string) ... how you want the questions to be sorted
+        + Values
+            + `mostRecent`
+            + `mostFavourited`
+            + `mostViewed`
+    + categoryId (optional, integer) ... which category of questions you want to see (find the categoryId from the /categories endpoint)
++ Response 200 (application/json)
+    + Body
+    
+            [
+                { 
+                    "askerId" : "5312dfedd9e81a00002e7c17",
+                    "askerName" : "sahil",
+                    "category" : "Technology/Startups",
+                    "description" : "",
+                    "name" : "How do I start a start up?",
+                    "numAnswers" : 1,
+                    "questionId" : "5326041c21e726653736276f",
+                    "timeAsked" : "2014-03-16T20:05:48.647Z"
+                },
+                { 
+                    "askerId" : "5312dfedd9e81a00002e7c17",
+                    "askerName" : "sahil",
+                    "category" : "Course Selection",
+                    "description" : "Chem or physics",
+                    "name" : "What course do I choose?",
+                    "numAnswers" : 0,
+                    "questionId" : "5331b06a5c1ad0f0bfa1f8cc",
+                    "timeAsked" : "2014-03-25T16:35:54.021Z"
+                },
+                { 
+                    "askerId" : "5312dfedd9e81a00002e7c17",
+                    "askerName" : "sahil",
+                    "category" : "Finances",
+                    "description" : "ggfdgfdg",
+                    "name" : "gtgfd",
+                    "numAnswers" : 0,
+                    "questionId" : "5335c0495c1ad0f0bfa1f8ce",
+                    "timeAsked" : "2014-03-28T18:32:41.512Z"
+                }
+            ]
+
+# Group Answers
+## Post an Answer to a Question [/answers{?questionId,answerBody}]
+### POST
++ Parameters
+    + questionId (string, required) ... The ID of the question you want to answer
+    + answerBody (string, required) ... The main answer text to the question
+
++ Response 200 (application/json)
+    + Body
+    
+            {
+                "answerId":"5312dfedd9e81a00002e7c17"
+            }
+
+# Group Categories
+
+### Get all of the question category ID's, and their names.
+
+## GET /categories
++ Response 200 (application/json)
+    + Body
+    
+            [
+                {
+                    "categoryId" : 0,
+                    "categoryName" : "Admissions"
+                },
+                {
+                    "categoryId" : 1,
+                    "categoryName" : "Campus Facilities"
+                }
+            ]
