@@ -6,44 +6,48 @@ var morgan = require('morgan');
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var passport = require('passport');
-var flash    = require('connect-flash');
+var flash = require('connect-flash');
 var Question = require('./models/question');
 var Answer = require('./models/answer');
 var settings = require('./config/settings');
 
-var SampleApp = function() {
+var SampleApp = function () {
 
     var self = this;
 
-    self.terminator = function(sig){
+    self.terminator = function (sig) {
         if (typeof sig === "string") {
-           console.log('%s: Received %s - terminating sample app ...',
-                       Date(Date.now()), sig);
-           process.exit(1);
+            console.log('%s: Received %s - terminating sample app ...',
+                Date(Date.now()), sig);
+            process.exit(1);
         }
-        console.log('%s: Node server stopped.', Date(Date.now()) );
+        console.log('%s: Node server stopped.', Date(Date.now()));
     };
 
-    self.setupTerminationHandlers = function(){
+    self.setupTerminationHandlers = function () {
         //  Process on exit and signals.
-        process.on('exit', function() { self.terminator(); });
+        process.on('exit', function () {
+            self.terminator();
+        });
 
         // Removed 'SIGPIPE' from the list - bugz 852598.
         ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
-         'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
-        ].forEach(function(element, index, array) {
-            process.on(element, function() { self.terminator(element); });
-        });
+            'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
+        ].forEach(function (element, index, array) {
+                process.on(element, function () {
+                    self.terminator(element);
+                });
+            });
     };
 
-    self.initializeServer = function() {
+    self.initializeServer = function () {
         self.app = express();
         self.app.use(bodyParser.urlencoded({extended: true}));
         self.app.use(morgan('combined'));
         var MongoStore = require('connect-mongo')(session);
         self.app.use(cookieParser());
         self.app.use(session({
-        	store: new MongoStore({url: settings.connection_string}),
+            store: new MongoStore({url: settings.connection_string}),
             secret: 'ilovescotchscotchyscotchscotch',
             resave: true,
             saveUninitialized: true
@@ -60,17 +64,16 @@ var SampleApp = function() {
 
     };
 
-    self.initialize = function() {
+    self.initialize = function () {
         self.setupTerminationHandlers();
         settings.init();
         self.initializeServer();
     };
 
-    self.start = function() {
-        self.app.listen(settings.port, settings.ipaddress, function() {
-            console.log('%s: Node server started on %s:%d ...', Date(Date.now() ), settings.ipaddress, settings.port);
+    self.start = function () {
+        self.app.listen(settings.port, settings.ipaddress, function () {
+            console.log('%s: Node server started on %s:%d ...', Date(Date.now()), settings.ipaddress, settings.port);
         });
-
     };
 
 };

@@ -307,9 +307,9 @@ function createRestEndpoints(app) {
         });
     });
 
-//    app.put('/questions/:id/upvote', function (req, res) {
-//
-//    });
+    app.put('/questions/:id/upvote', function (req, res) {
+        res.send("not implemented yet");
+    });
 
     app.post('/api/answers', function (req, res) {
         var username = req.body.username;
