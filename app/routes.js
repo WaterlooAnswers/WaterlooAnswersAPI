@@ -172,6 +172,11 @@ module.exports = function (server, passport) {
     }
 
     function createRestEndpoints() {
+
+        app.get('/api', function (req, res) {
+            res.redirect("http://docs.waterlooanswers.apiary.io/");
+        });
+
         app.get('/api/categories', function (req, res) {
             res.json({categories: global.questionCategories});
         });
@@ -196,8 +201,8 @@ module.exports = function (server, passport) {
             });
         });
 
-        app.get('/api/question/*', function (req, res) {
-            var id = req.url.split('/')[3];
+        app.get('/api/questions/:id', function (req, res) {
+            var id = req.params.id;
             Question.findById(id).populate('answers').populate('asker').exec(function (err, item) {
                 if (err) {
                     res.status(400).json({error: "Could not find question, please form your requests like the following: api/question/QUESTION_ID"});
