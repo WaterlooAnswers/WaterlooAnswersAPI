@@ -178,7 +178,11 @@ module.exports = function (server, passport) {
         });
 
         app.get('/api/categories', function (req, res) {
-            res.json({categories: global.questionCategories});
+            var output = [];
+            for (var i = 0; i < global.questionCategories.length; i++) {
+                output.push({categoryId: i, categoryName: global.questionCategories[i]});
+            }
+            res.json(output);
         });
 
         app.get('/api/questions', function (req, res) {
