@@ -6,8 +6,12 @@ module.exports = function (server, passport) {
 
     var app = server.app;
 
-    createRestEndpoints();
+    createRestEndpoints(app);
+    createWebsiteEndpoints(app, passport);
 
+};
+
+function createWebsiteEndpoints(app, passport) {
     app.get('/', isLoggedIn, function (req, res) {
         res.render('index.ejs', {user: req.user});
     });
@@ -102,7 +106,6 @@ module.exports = function (server, passport) {
         });
     });
 
-
     Question.schema.path('category').enumValues.forEach(function (entry) {
         var val = entry.replace(/[^a-zA-Z0-9]/g, '');
         app.get('/category/' + val, isLoggedIn, function (req, res) {
@@ -111,7 +114,6 @@ module.exports = function (server, passport) {
             });
         });
     });
-
 
     app.post('/signup', passport.authenticate('local-signup', {
         successRedirect: '/', // redirect to the secure profile section
@@ -170,185 +172,205 @@ module.exports = function (server, passport) {
         console.log(req.user);
         res.redirect('/login');
     }
+}
 
-    function createRestEndpoints() {
+function createRestEndpoints(app) {
 
-        app.get('/api', function (req, res) {
-            res.redirect("http://docs.waterlooanswers.apiary.io/");
-        });
+    app.get('/api', function (req, res) {
+        res.redirect("http://docs.waterlooanswers.apiary.io/");
+    });
 
-        app.get('/api/categories', function (req, res) {
+    app.get('/api/categories', function (req, res) {
+        var output = [];
+        for (var i = 0; i < global.questionCategories.length; i++) {
+            output.push({categoryId: i, categoryName: global.questionCategories[i]});
+        }
+        res.json(output);
+    });
+
+    app.get('/api/questions', function (req, res) {
+        Question.find().populate('asker', 'firstName').exec(function (err, questions) {
             var output = [];
-            for (var i = 0; i < global.questionCategories.length; i++) {
-                output.push({categoryId: i, categoryName: global.questionCategories[i]});
-            }
+            questions.forEach(function (item) {
+                var currentOutput = {};
+                currentOutput.questionId = item._id;
+                currentOutput.name = item.name;
+                currentOutput.description = item.text;
+                currentOutput.askerName = item.asker.firstName;
+                currentOutput.askerId = item.asker._id;
+                currentOutput.category = item.category;
+                currentOutput.numAnswers = item.answers.length;
+                currentOutput.numVotes = item.votes;
+                currentOutput.timeAsked = item.time;
+                output.push(currentOutput);
+            });
             res.json(output);
         });
+    });
 
-        app.get('/api/questions', function (req, res) {
-            Question.find().populate('asker', 'firstName').exec(function (err, questions) {
-                var output = [];
-                questions.forEach(function (item) {
-                    var currentOutput = {};
-                    currentOutput.questionId = item._id;
-                    currentOutput.name = item.name;
-                    currentOutput.description = item.text;
-                    currentOutput.askerName = item.asker.firstName;
-                    currentOutput.askerId = item.asker._id;
-                    currentOutput.category = item.category;
-                    currentOutput.numAnswers = item.answers.length;
-                    currentOutput.numVotes = item.votes;
-                    currentOutput.timeAsked = item.time;
-                    output.push(currentOutput);
+    app.get('/api/questions/:id', function (req, res) {
+        var id = req.params.id;
+        Question.findById(id).populate('answers').populate('asker').exec(function (err, item) {
+            if (err) {
+                res.status(400).json({error: "Could not find question, please form your requests like the following: api/question/QUESTION_ID"});
+            } else {
+                var currentOutput = {};
+                currentOutput.questionId = item._id;
+                currentOutput.name = item.name;
+                currentOutput.description = item.text;
+                currentOutput.askerName = item.asker.firstName;
+                currentOutput.askerId = item.asker._id;
+                currentOutput.askerEmail = item.asker.email;
+                currentOutput.category = item.category;
+                currentOutput.numAnswers = item.answers.length;
+                currentOutput.answers = [];
+                item.answers.forEach(function (answer) {
+                    var currentAnswer = {};
+                    currentAnswer.answererId = answer.answerer;
+                    currentAnswer.text = answer.text;
+                    currentAnswer.answerId = answer._id;
+                    currentAnswer.timeAnswered = answer.time;
+                    currentOutput.answers.push(currentAnswer);
                 });
-                res.json(output);
-            });
+                currentOutput.favourites = item.favourites;
+                currentOutput.numVotes = item.votes;
+                currentOutput.timeAsked = item.time;
+                res.json(currentOutput);
+            }
         });
+    });
 
-        app.get('/api/questions/:id', function (req, res) {
-            var id = req.params.id;
-            Question.findById(id).populate('answers').populate('asker').exec(function (err, item) {
-                if (err) {
-                    res.status(400).json({error: "Could not find question, please form your requests like the following: api/question/QUESTION_ID"});
-                } else {
-                    var currentOutput = {};
-                    currentOutput.questionId = item._id;
-                    currentOutput.name = item.name;
-                    currentOutput.description = item.text;
-                    currentOutput.askerName = item.asker.firstName;
-                    currentOutput.askerId = item.asker._id;
-                    currentOutput.askerEmail = item.asker.email;
-                    currentOutput.category = item.category;
-                    currentOutput.numAnswers = item.answers.length;
-                    currentOutput.answers = [];
-                    item.answers.forEach(function (answer) {
-                        var currentAnswer = {};
-                        currentAnswer.answererId = answer.answerer;
-                        currentAnswer.text = answer.text;
-                        currentAnswer.answerId = answer._id;
-                        currentAnswer.timeAnswered = answer.time;
-                        currentOutput.answers.push(currentAnswer);
+    app.delete('/api/questions/:id', function (req, res) { //TODO Validate DELETION that it's your question!!
+        var id = req.params.id;
+        Question.findByIdAndRemove(id, function (err, doc) {
+            if (err) {
+                res.status(400).json({error: "Could not find question, please form your requests like the following: api/question/QUESTION_ID"});
+            } else {
+                res.status(204);
+            }
+        });
+    });
+
+    app.post('/api/questions', function (req, res) {
+        var questionTitle = req.body.questionTitle;
+        if (isNullOrEmpty(questionTitle)) {
+            res.status(400).json({error: "please provide 'questionTitle' property"});
+            console.log("no title");
+            return;
+        }
+
+        var text = req.body.questionDescription;
+        if (isNullOrEmpty(text)) {
+            res.status(400).json({error: "please provide 'questionDescription' property"});
+            console.log("no desc");
+            return;
+        }
+
+        var askerEmail = req.body.username.toLowerCase();
+        if (isNullOrEmpty(askerEmail)) {
+            res.status(400).json({error: "please provide 'username' property"});
+            console.log("no username");
+            return;
+        }
+
+        var askerPassword = req.body.password;
+        if (isNullOrEmpty(askerPassword)) {
+            res.status(400).json({error: "please provide 'password' property"});
+            console.log("no password");
+            return;
+        }
+
+        var category = global.questionCategories[req.body.categoryIndex];
+        if (isNullOrEmpty(category)) {
+            res.status(400).json({error: "please provide valid 'categoryIndex' number"});
+            console.log("no category index");
+            return;
+        }
+
+        User.findOne({email: askerEmail}, function (err, doc) {
+            if (err || !doc) {
+                res.status(401).json({error: "incorrect username or password"});
+            } else {
+                if (doc.validPassword(askerPassword)) {
+                    var q1 = new Question({name: questionTitle, text: text, asker: doc._id, category: category});
+                    q1.save(function (err, q1) {
+                        if (err) {
+                            res.status(500).json({error: "could not save question"});
+                        } else {
+                            res.json({result: "Successfully added question!", questionId: q1._id});
+                        }
                     });
-                    currentOutput.favourites = item.favourites;
-                    currentOutput.numVotes = item.votes;
-                    currentOutput.timeAsked = item.time;
-                    res.json(currentOutput);
-                }
-            });
-        });
-
-        app.post('/api/ask', function (req, res) {
-            var questionTitle = req.body.questionTitle;
-            if (isNullOrEmpty(questionTitle)) {
-                res.status(400).json({error: "please provide 'questionTitle' property"});
-                console.log("no title");
-                return;
-            }
-
-            var text = req.body.questionDescription;
-            if (isNullOrEmpty(text)) {
-                res.status(400).json({error: "please provide 'questionDescription' property"});
-                console.log("no desc");
-                return;
-            }
-
-            var askerEmail = req.body.username.toLowerCase();
-            if (isNullOrEmpty(askerEmail)) {
-                res.status(400).json({error: "please provide 'username' property"});
-                console.log("no username");
-                return;
-            }
-
-            var askerPassword = req.body.password;
-            if (isNullOrEmpty(askerPassword)) {
-                res.status(400).json({error: "please provide 'password' property"});
-                console.log("no password");
-                return;
-            }
-
-            var category = global.questionCategories[req.body.categoryIndex];
-            if (isNullOrEmpty(category)) {
-                res.status(400).json({error: "please provide valid 'categoryIndex' number"});
-                console.log("no category index");
-                return;
-            }
-
-            User.findOne({email: askerEmail}, function (err, doc) {
-                if (err || !doc) {
-                    res.status(401).json({error: "incorrect username or password"});
                 } else {
-                    if (doc.validPassword(askerPassword)) {
-                        var q1 = new Question({name: questionTitle, text: text, asker: doc._id, category: category});
-                        q1.save(function (err, q1) {
-                            if (err) {
-                                res.status(500).json({error: "could not save question"});
-                            } else {
-                                res.json({result: "Successfully added question!", questionId: q1._id});
-                            }
-                        });
-                    } else {
-                        res.status(401).json({error: "incorrect username or password"});
-                    }
-                }
-            });
-        });
-
-        app.post('/api/addanswer', function (req, res) {
-            var username = req.body.username;
-            if (isNullOrEmpty(username)) {
-                res.status(400).json({error: "please provide 'username' property"});
-                console.log("no username");
-                return;
-            }
-
-            var password = req.body.password;
-            if (isNullOrEmpty(password)) {
-                res.status(400).json({error: "please provide 'password' property"});
-                console.log("no password");
-                return;
-            }
-
-            var questionId = req.body.questionId;
-            if (isNullOrEmpty(questionId)) {
-                res.status(400).json({error: "please provide 'questionId' property"});
-                console.log("no questionId");
-                return;
-            }
-
-            var text = req.body.answerBody;
-            if (isNullOrEmpty(text)) {
-                res.status(400).json({error: "please provide 'answerBody' property"});
-                console.log("no text");
-                return;
-            }
-
-            User.findOne({email: username}, function (err, doc) {
-                if (err || !doc) {
                     res.status(401).json({error: "incorrect username or password"});
-                } else {
-                    if (doc.validPassword(password)) {
-                        var ans = new Answer({answerer: doc._id, question: questionId, answererName: doc.firstName, text: text});
-                        ans.save(function (err, answerSaved) {
-                            if (err) {
-                                res.status(500).json({error: "could not save answer"});
-                            } else {
-                                Question.findByIdAndUpdate(questionId, {$push: {answers: answerSaved._id}}, function (err, question) {
-                                    if (err) {
-                                        res.status(500).json({error: "could not save answer"});
-                                    } else {
-                                        res.json({result: "Successfully added answer!", questionId: question._id, answerId: answerSaved._id});
-                                    }
-                                });
-                            }
-                        });
-                    } else {
-                        res.status(401).json({error: "incorrect username or password"});
-                    }
                 }
-            });
+            }
         });
-    }
-};
+    });
+
+//    app.put('/questions/:id/upvote', function (req, res) {
+//
+//    });
+
+    app.post('/api/answers', function (req, res) {
+        var username = req.body.username;
+        if (isNullOrEmpty(username)) {
+            res.status(400).json({error: "please provide 'username' property"});
+            console.log("no username");
+            return;
+        }
+
+        var password = req.body.password;
+        if (isNullOrEmpty(password)) {
+            res.status(400).json({error: "please provide 'password' property"});
+            console.log("no password");
+            return;
+        }
+
+        var questionId = req.body.questionId;
+        if (isNullOrEmpty(questionId)) {
+            res.status(400).json({error: "please provide 'questionId' property"});
+            console.log("no questionId");
+            return;
+        }
+
+        var text = req.body.answerBody;
+        if (isNullOrEmpty(text)) {
+            res.status(400).json({error: "please provide 'answerBody' property"});
+            console.log("no text");
+            return;
+        }
+
+        User.findOne({email: username}, function (err, doc) {
+            if (err || !doc) {
+                res.status(401).json({error: "incorrect username or password"});
+            } else {
+                if (doc.validPassword(password)) {
+                    var ans = new Answer({answerer: doc._id, question: questionId, answererName: doc.firstName, text: text});
+                    ans.save(function (err, answerSaved) {
+                        if (err) {
+                            res.status(500).json({error: "could not save answer"});
+                        } else {
+                            Question.findByIdAndUpdate(questionId, {$push: {answers: answerSaved._id}}, function (err, question) {
+                                if (err) {
+                                    res.status(500).json({error: "could not save answer"});
+                                } else {
+                                    res.json({result: "Successfully added answer!", questionId: question._id, answerId: answerSaved._id});
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    res.status(401).json({error: "incorrect username or password"});
+                }
+            }
+        });
+    });
+
+    app.all('/api/*', function (req, res) {
+        res.status(404).json({error: "Invalid HTTP method or path, please refer to the API Documentation.", documentationUrl: "http://askuw.sahiljain.ca/api"});
+        //TODO save typos in db
+    });
+}
 
 function isNullOrEmpty(string) {
     if (!string) return true;

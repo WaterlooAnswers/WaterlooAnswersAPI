@@ -53,6 +53,7 @@ var SampleApp = function() {
         self.app.use(flash()); // use connect-flash for flash messages stored in session
         self.app.set('view engine', 'ejs');
         self.app.use(express.static(__dirname + '/public'));
+        self.app.disable("x-powered-by");
         require('./app/routes.js')(self, passport);
         require('./config/passport')(passport);
         require('./config/database')(settings.connection_string);
