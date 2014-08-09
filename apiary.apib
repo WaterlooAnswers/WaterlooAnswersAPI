@@ -68,13 +68,13 @@ Log in.
 
 ## DELETE
 + Parameters
-    + id (required, string) ... ID of the question you want to delete
+    + id (required, string, `5317e88ad5dcc70c283f450a`) ... ID of the question you want to delete
 + Response 204
 
 ## Upvote a question [/questions/{id}/upvote]
 ### PUT
 + Parameters
-    + id (required, string) ... ID of the question you want to upvote
+    + id (required, string, `5317e88ad5dcc70c283f450a`) ... ID of the question you want to upvote
 + Response 200 (application/json; charset=utf-8)
     + Body 
     
@@ -96,9 +96,9 @@ Log in.
 ## Get a Set of Questions by parameters [/questions{?questionsPerPage,pageNumber,sortOrder,categoryId}]
 ### GET
 + Parameters
-    + questionsPerPage (required, number) ... the number of questions you want to recieve
-    + pageNumber (required, number) ... the page of questions you want to recieve
-    + sortOrder (optional, string) ... how you want the questions to be sorted
+    + questionsPerPage = `20` (optional, number) ... the number of questions you want to recieve
+    + pageNumber = `1` (optional, number) ... the page of questions you want to recieve
+    + sortOrder = `mostRecent` (optional, string) ... how you want the questions to be sorted
         + Values
             + `mostRecent`
             + `mostFavourited`
