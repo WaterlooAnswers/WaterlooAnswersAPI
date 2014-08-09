@@ -8,7 +8,6 @@ The WaterlooAnswers API is a university-wide answer service similar to Yahoo Ans
 
 # Group Login Flow
 How to get a session token on login, and how to invalidate it on logout.
-<a id="login" ></a>
 
 ## /login{?username,password}
 ### POST
@@ -17,7 +16,7 @@ Log in.
 + Parameters
     + username (required, string, `abc`) ... account login email/username
     + password (required, string, `123`) ... account password
-+ Response 200 (application/json)
++ Response 200 (application/json; charset=utf-8)
     + Body
 
             {
@@ -30,8 +29,8 @@ Log in.
 ## Get a Single Question [/questions/{id}]
 ## GET
 + Parameters
-    + id (required, string) ... ID of the question you want
-+ Response 200 (application/json)
+    + id (required, string, `5317e88ad5dcc70c283f450a`) ... ID of the question you want
++ Response 200 (application/json; charset=utf-8)
     + Body
     
             {
@@ -76,7 +75,7 @@ Log in.
 ### PUT
 + Parameters
     + id (required, string) ... ID of the question you want to upvote
-+ Response 200 (application/json)
++ Response 200 (application/json; charset=utf-8)
     + Body 
     
             {
@@ -87,7 +86,7 @@ Log in.
 ### PUT
 + Parameters
     + id (required, string) ... ID of the question you want to downvote
-+ Response 200 (application/json)
++ Response 200 (application/json; charset=utf-8)
     + Body 
     
             {
@@ -105,7 +104,7 @@ Log in.
             + `mostFavourited`
             + `mostViewed`
     + categoryId (optional, integer) ... which category of questions you want to see (find the categoryId from the /categories endpoint)
-+ Response 200 (application/json)
++ Response 200 (application/json; charset=utf-8)
     + Body
     
             [
@@ -148,7 +147,7 @@ Log in.
     + questionId (string, required) ... The ID of the question you want to answer
     + answerBody (string, required) ... The main answer text to the question
 
-+ Response 200 (application/json)
++ Response 200 (application/json; charset=utf-8)
     + Body
     
             {
@@ -160,7 +159,7 @@ Log in.
 ### Get all of the question category ID's, and their names.
 
 ## GET /categories
-+ Response 200 (application/json)
++ Response 200 (application/json; charset=utf-8)
     + Body
     
             [{"categoryId":0,"categoryName":"Admissions/Program Advice"},{"categoryId":1,"categoryName":"Campus Facilities"},{"categoryId":2,"categoryName":"Co-op/Jobmine"},{"categoryId":3,"categoryName":"Course Selection"},{"categoryId":4,"categoryName":"Extracurriculars"},{"categoryId":5,"categoryName":"Finances"},{"categoryId":6,"categoryName":"General Advice"},{"categoryId":7,"categoryName":"Homework/Exams"},{"categoryId":8,"categoryName":"Parties/Student Life"},{"categoryId":9,"categoryName":"Programming"},{"categoryId":10,"categoryName":"Residence"},{"categoryId":11,"categoryName":"Technology/Startups"},{"categoryId":12,"categoryName":"Other"}]
