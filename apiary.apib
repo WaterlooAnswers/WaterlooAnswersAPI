@@ -26,7 +26,7 @@ Log in.
 
 # Group Questions
 
-## Question By ID [/questions/{id}]
+## Retrieve Question By ID [/questions/{id}]
 ## GET
 Get a single question by ID: 
 + Parameters
@@ -67,23 +67,30 @@ Get a single question by ID:
                 timeAsked: "2014-03-25T16:35:54.021Z"
             }
 
+## Delete your Question by ID [/questions/{?id,token}]
 ## DELETE
 Delete a single question by ID:
 + Parameters
     + id (required, string, `5317e88ad5dcc70c283f450a`) ... ID of the question you want to delete
+    + token (required, string, `xyzxyzxyzxyzxyzxyzxyzyxyz`) ... Your web token given by the '/login' endpoint.
 + Response 204
 
-## Add a Question [/questions/{?questionTitle,questionDescription,categoryIndex}]
+## Add a Question [/questions/{?questionTitle,questionDescription,categoryIndex,token}]
 ## POST
 Add a question to the database:
 + Parameters
     + questionTitle (string, required, `My Question`) ... the title of the question
+    + questionDescription (string, required, `Is there anyone at Waterloo who can beat Dr.Mansour at arm wrestling?`) ... the title of the question
+    + categoryIndex (number, required, `3`) ... the title of the question
+    + token (string, required, `xyzxyzxyyzyyzxy`) ... Your web token given by the '/login' endpoint.
+    
 + Response 200
 
-## Upvote a question [/questions/{id}/upvote]
+## Upvote a question [/questions/{id}/upvote{?token}]
 ### PUT
 + Parameters
     + id (required, string, `5317e88ad5dcc70c283f450a`) ... ID of the question you want to upvote
+    + token (string, required, `xyzxyzxyyzyyzxy`) ... Your web token given by the '/login' endpoint.
 + Response 200 (application/json; charset=utf-8)
     + Body 
     
@@ -91,10 +98,11 @@ Add a question to the database:
                 "success":true
             }
 
-## Downvote a question [/questions/{id}/downvote]
+## Downvote a question [/questions/{id}/downvote{?token}]
 ### PUT
 + Parameters
     + id (required, string) ... ID of the question you want to downvote
+    + token (string, required, `xyzxyzxyyzyyzxy`) ... Your web token given by the '/login' endpoint.
 + Response 200 (application/json; charset=utf-8)
     + Body 
     
@@ -150,11 +158,12 @@ Add a question to the database:
             ]
 
 # Group Answers
-## Post an Answer to a Question [/answers{?questionId,answerBody}]
+## Post an Answer to a Question [/answers{?questionId,answerBody,token}]
 ### POST
 + Parameters
     + questionId (string, required) ... The ID of the question you want to answer
     + answerBody (string, required) ... The main answer text to the question
+    + token (string, required, `xyzxyzxyyzyyzxy`) ... Your web token given by the '/login' endpoint.
 
 + Response 200 (application/json; charset=utf-8)
     + Body
