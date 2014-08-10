@@ -1,5 +1,5 @@
 FORMAT: 1A
-HOST: http://askuw.sahiljain.ca
+HOST: http://askuw.sahiljain.ca/api
 
 # WaterlooAnswers
 The WaterlooAnswers API is a university-wide answer service similar to Yahoo Answers.
@@ -7,7 +7,7 @@ The WaterlooAnswers API is a university-wide answer service similar to Yahoo Ans
 # WaterlooAnswers API Root [http://askuw.sahiljain.ca/api/]
 
 # Group Login Flow
-How to get a session token on login, and how to invalidate it on logout.
+How to get a session token on login, and sign up.
 
 ## /login{?username,password}
 ### POST
@@ -23,6 +23,20 @@ Log in.
                 "sessionToken": "xyzxyzxyzxyzxyzyxyzx323"
             }
 
+## /signup{?username,password}
+### POST
+Sign up.
+
++ Parameters
+    + username (required, string, `abc`) ... account login email/username
+    + password (required, string, `123`) ... account password
++ Response 200 (application/json; charset=utf-8)
+    + Body
+
+            {
+                "success":true,
+                "sessionToken": "xyzxyzxyzxyzxyzyxyzx323"
+            }
 
 # Group Questions
 
