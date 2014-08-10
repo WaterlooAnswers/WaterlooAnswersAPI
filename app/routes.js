@@ -81,8 +81,6 @@ function createWebsiteEndpoints(app, passport) {
         var question = [];
         User.findById(profile_id).exec(function (err, doc) {
             if (!err) {
-                console.log(doc);
-                //res.render('profile', {user: doc});
                 Question.find({'asker': doc._id}, function (err, docs) {
                     console.log(docs);
                     question = docs;
@@ -90,17 +88,12 @@ function createWebsiteEndpoints(app, passport) {
                         console.log("docss");
                         console.log(docss);
 
-                        answer = docss;
-                        //Question.find({'asker': answer[0].question}, function(err, docsss){
-                        //console.log(docsss);
+                        var answer = docss;
                         res.render('profile', {
                             questions: question,
                             answers: answer,
-                            //questionAnswered: docsss,
                             user: doc});
                     });
-                    //});
-                    //res.render('profile', {questions: question, user: doc});
                 });
             }
         });
