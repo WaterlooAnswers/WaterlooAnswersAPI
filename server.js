@@ -61,7 +61,6 @@ var SampleApp = function () {
         require('./app/routes.js')(self, passport);
         require('./config/passport')(passport);
         require('./config/database')(settings.connection_string);
-
     };
 
     self.initialize = function () {

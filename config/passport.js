@@ -37,8 +37,6 @@ module.exports = function (passport) {
         },
         function (req, input, password, done) {
             var email = input.toLowerCase();
-            console.log(input);
-            //console.log(req.body.firstName);
             // asynchronous
             // User.findOne wont fire unless data is sent back
             process.nextTick(function () {
@@ -53,6 +51,8 @@ module.exports = function (passport) {
                     // check to see if theres already a user with that email
                     if (user) {
                         return done(null, false, req.flash('signupMessage', 'Sorry, that email is already taken.'));
+                    } else if (!req.body.firstName || req.body.firstName === "") {
+                        return done(null, false);
                     } else {
 
                         // if there is no user with that email

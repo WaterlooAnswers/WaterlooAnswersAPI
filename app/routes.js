@@ -1,12 +1,13 @@
 var Question = require('../models/question');
 var Answer = require('../models/answer');
 var User = require('../models/user');
+var jwt = require('jwt-simple');
 
 module.exports = function (server, passport) {
 
     var app = server.app;
 
-    createRestEndpoints(app);
+    createRestEndpoints(app, passport);
     createWebsiteEndpoints(app, passport);
 
 };
@@ -85,9 +86,6 @@ function createWebsiteEndpoints(app, passport) {
                     console.log(docs);
                     question = docs;
                     Answer.find({'answerer': doc._id}, function (err, docss) {
-                        console.log("docss");
-                        console.log(docss);
-
                         var answer = docss;
                         res.render('profile', {
                             questions: question,
@@ -167,7 +165,7 @@ function createWebsiteEndpoints(app, passport) {
     }
 }
 
-function createRestEndpoints(app) {
+function createRestEndpoints(app, passport) {
 
     app.get('/api', function (req, res) {
         res.redirect("http://docs.waterlooanswers.apiary.io/");
@@ -233,13 +231,26 @@ function createRestEndpoints(app) {
         });
     });
 
-    app.delete('/api/questions/:id', function (req, res) { //TODO Validate DELETION that it's your question!!
-        var id = req.params.id;
-        Question.findByIdAndRemove(id, function (err, doc) {
-            if (err) {
-                res.status(400).json({error: "Could not find question, please form your requests like the following: api/question/QUESTION_ID"});
+    app.delete('/api/questions', function (req, res) {
+        var id = req.body.id;
+        var token = req.body.token;
+        if (!id) {
+            return res.status(400).json({error: "please give a question id"});
+        }
+        if (!token) {
+            return res.status(400).json({error: "please give a valid token"});
+        }
+        getUserFromToken(token, function (err, user) {
+            if (!user) {
+                return res.status(400).json({error: "Invalid token"});
             } else {
-                res.status(204);
+                Question.remove({_id: id, asker: user._id}, function (err, doc) {
+                    if (err) {
+                        res.status(400).json({error: "Could not find question, please form your requests according to the documentation"});
+                    } else {
+                        res.status(204).send();
+                    }
+                })
             }
         });
     });
@@ -248,74 +259,51 @@ function createRestEndpoints(app) {
         var questionTitle = req.body.questionTitle;
         if (isNullOrEmpty(questionTitle)) {
             res.status(400).json({error: "please provide 'questionTitle' property"});
-            console.log("no title");
             return;
         }
 
         var text = req.body.questionDescription;
         if (isNullOrEmpty(text)) {
             res.status(400).json({error: "please provide 'questionDescription' property"});
-            console.log("no desc");
-            return;
-        }
-
-        var askerEmail = req.body.username.toLowerCase();
-        if (isNullOrEmpty(askerEmail)) {
-            res.status(400).json({error: "please provide 'username' property"});
-            console.log("no username");
-            return;
-        }
-
-        var askerPassword = req.body.password;
-        if (isNullOrEmpty(askerPassword)) {
-            res.status(400).json({error: "please provide 'password' property"});
-            console.log("no password");
             return;
         }
 
         var category = global.questionCategories[req.body.categoryIndex];
         if (isNullOrEmpty(category)) {
             res.status(400).json({error: "please provide valid 'categoryIndex' number"});
-            console.log("no category index");
             return;
         }
 
-        User.findOne({email: askerEmail}, function (err, doc) {
-            if (err || !doc) {
-                res.status(401).json({error: "incorrect username or password"});
-            } else {
-                if (doc.validPassword(askerPassword)) {
-                    var q1 = new Question({name: questionTitle, text: text, asker: doc._id, category: category});
-                    q1.save(function (err, q1) {
-                        if (err) {
-                            res.status(500).json({error: "could not save question"});
-                        } else {
-                            res.json({result: "Successfully added question!", questionId: q1._id});
-                        }
-                    });
-                } else {
-                    res.status(401).json({error: "incorrect username or password"});
-                }
+        var token = req.body.token;
+        if (isNullOrEmpty(category)) {
+            res.status(400).json({error: "please provide valid 'token'"});
+            return;
+        }
+
+        getUserFromToken(token, function (err, user) {
+            if (err || !user) {
+                return res.status(401).json({error: "invalid token"});
             }
+
+            var q1 = new Question({name: questionTitle, text: text, asker: user._id, category: category});
+            q1.save(function (err, q1) {
+                if (err) {
+                    res.status(500).json({error: "could not save question"});
+                } else {
+                    res.json({result: "Successfully added question!", questionId: q1._id});
+                }
+            });
         });
     });
 
-    app.put('/questions/:id/upvote', function (req, res) {
+    app.put('/questions/:id/upvote', function (req, res) { // TODO Implement
         res.send("not implemented yet");
     });
 
     app.post('/api/answers', function (req, res) {
-        var username = req.body.username;
+        var token = req.body.token;
         if (isNullOrEmpty(username)) {
-            res.status(400).json({error: "please provide 'username' property"});
-            console.log("no username");
-            return;
-        }
-
-        var password = req.body.password;
-        if (isNullOrEmpty(password)) {
-            res.status(400).json({error: "please provide 'password' property"});
-            console.log("no password");
+            res.status(400).json({error: "please provide 'token' property"});
             return;
         }
 
@@ -333,30 +321,52 @@ function createRestEndpoints(app) {
             return;
         }
 
-        User.findOne({email: username}, function (err, doc) {
+        getUserFromToken(token, function (err, doc) { //FIXME there's currently a link between question->answer and answer->question, make it one way
             if (err || !doc) {
-                res.status(401).json({error: "incorrect username or password"});
+                res.status(401).json({error: "incorrect token"});
             } else {
-                if (doc.validPassword(password)) {
-                    var ans = new Answer({answerer: doc._id, question: questionId, answererName: doc.firstName, text: text});
-                    ans.save(function (err, answerSaved) {
-                        if (err) {
-                            res.status(500).json({error: "could not save answer"});
-                        } else {
-                            Question.findByIdAndUpdate(questionId, {$push: {answers: answerSaved._id}}, function (err, question) {
-                                if (err) {
-                                    res.status(500).json({error: "could not save answer"});
-                                } else {
-                                    res.json({result: "Successfully added answer!", questionId: question._id, answerId: answerSaved._id});
-                                }
-                            });
-                        }
-                    });
-                } else {
-                    res.status(401).json({error: "incorrect username or password"});
-                }
+                var ans = new Answer({answerer: doc._id, question: questionId, answererName: doc.firstName, text: text});
+                ans.save(function (err, answerSaved) {
+                    if (err) {
+                        res.status(500).json({error: "could not save answer"});
+                    } else {
+                        Question.findByIdAndUpdate(questionId, {$push: {answers: answerSaved._id}}, function (err, question) {
+                            if (err) {
+                                res.status(500).json({error: "could not save answer"});
+                            } else {
+                                res.json({result: "Successfully added answer!", questionId: question._id, answerId: answerSaved._id});
+                            }
+                        });
+                    }
+                });
             }
         });
+    });
+
+    app.post('/api/login', function (req, res, next) {
+        passport.authenticate('local-login', {session: false}, function (err, user, info) {
+            if (err) {
+                return next(err);
+            }
+            if (!user) {
+                return res.status(401).json({error: "invalid username or password"});
+            }
+            var token = generateTokenFromUser(user);
+            res.json({token: token});
+        })(req, res, next);
+    });
+
+    app.post('/api/signup', function (req, res, next) {
+        passport.authenticate('local-signup', {session: false}, function (err, user, info) {
+            if (err) {
+                return next(err);
+            }
+            if (!user) {
+                return res.status(401).json({error: "did not create user"});
+            }
+            var token = generateTokenFromUser(user);
+            res.json({success: true, username: user.email, firstName: user.firstName, token: token});
+        })(req, res, next);
     });
 
     app.all('/api/*', function (req, res) {
@@ -365,7 +375,24 @@ function createRestEndpoints(app) {
     });
 }
 
+function generateTokenFromUser(user) {
+    return jwt.encode({userId: user._id}, "mysecret");
+}
+
+function getUserFromToken(token, next) {
+    var id;
+    try {
+        id = jwt.decode(token, "mysecret");
+    } catch (ex) {
+        return next(true, null);
+    }
+    User.findById(id.userId, function (err, doc) {
+        next(err, doc);
+    });
+}
+
 function isNullOrEmpty(string) {
     if (!string) return true;
     return !/\S/.test(string);
 }
+

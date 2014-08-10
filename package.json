@@ -25,6 +25,7 @@
     },
 
     "dependencies": {
+        "jwt-simple": "latest",
         "bcrypt-nodejs": "latest",
         "body-parser": "latest",
         "connect-flash": "latest",
