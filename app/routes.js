@@ -167,6 +167,13 @@ function createWebsiteEndpoints(app, passport) {
 
 function createRestEndpoints(app, passport) {
 
+
+    app.all('*', function(req, res, next) { //TODO REMOVE THIS BEFORE DEPLOYING
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "X-Requested-With");
+        next();
+    });
+
     app.get('/api', function (req, res) {
         res.redirect("http://docs.waterlooanswers.apiary.io/");
     });
@@ -300,9 +307,24 @@ function createRestEndpoints(app, passport) {
         res.send("not implemented yet");
     });
 
+    app.get('/api/user', function (req, res) {
+        var token = req.query.token;
+        if (isNullOrEmpty(token)) {
+            return res.status(400).json({error: "please provide 'token' property"});
+        }
+
+        getUserFromToken(token, function(err, doc) {
+            var out = {};
+            out.firstName = doc.firstName;
+            out.userId = doc._id;
+            out.dateCreated = doc.dateCreated;
+            return res.json(out);
+        });
+    });
+
     app.post('/api/answers', function (req, res) {
         var token = req.body.token;
-        if (isNullOrEmpty(username)) {
+        if (isNullOrEmpty(token)) {
             res.status(400).json({error: "please provide 'token' property"});
             return;
         }
