@@ -19,9 +19,15 @@ var questionSchema = mongoose.Schema({
 	asker: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
 	name: String,
 	favourites: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+    numFavourites: Number,
 	text: String,
 	time : { type : Date, default: Date.now },
 	answers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Answer' }],
+    numAnswers: Number,
+    viewers: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    ],
+    numViews: Number,
     category: {type: String, enum: global.questionCategories}
 });
 

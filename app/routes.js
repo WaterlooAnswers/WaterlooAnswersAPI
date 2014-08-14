@@ -8,7 +8,7 @@ module.exports = function (server, passport) {
     var app = server.app;
 
     createRestEndpoints(app, passport);
-    createWebsiteEndpoints(app, passport);
+    //createWebsiteEndpoints(app, passport);
 
 };
 
@@ -167,7 +167,6 @@ function createWebsiteEndpoints(app, passport) {
 
 function createRestEndpoints(app, passport) {
 
-
     app.all('*', function(req, res, next) { //TODO REMOVE THIS BEFORE DEPLOYING
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -186,8 +185,31 @@ function createRestEndpoints(app, passport) {
         res.json(output);
     });
 
-    app.get('/api/questions', function (req, res) {
-        Question.find().populate('asker', 'firstName').exec(function (err, questions) {
+    app.get('/api/questions', function (req, res) { //TODO test if you pass words instead of numbers
+        var questionsPerPage = req.query.questionsPerPage || 20;
+        var pageNumber = req.query.pageNumber || 1;
+        var sortOrder = req.query.sortOrder;
+        console.log(sortOrder);
+        var categoryId = req.query.categoryId;
+        var query = {};
+        if (categoryId) {
+            query.category = global.questionCategories[categoryId];
+            console.log(query);
+        }
+
+        var skip = questionsPerPage * (pageNumber - 1);
+        if (skip < 0) skip = 0;
+
+        var sortObject = {};
+        if (sortOrder == 'mostFavourited') {
+            sortObject.numFavourites = -1;
+        } else if (sortOrder == 'mostViewed') {
+            sortObject.numViews = -1;
+        } else {
+            sortObject.time = -1;
+        }
+
+        Question.find(query).sort(sortObject).skip(skip).limit(questionsPerPage).populate('asker', 'firstName _id').exec(function (err, questions) {
             var output = [];
             questions.forEach(function (item) {
                 var currentOutput = {};
@@ -352,7 +374,7 @@ function createRestEndpoints(app, passport) {
                     if (err) {
                         res.status(500).json({error: "could not save answer"});
                     } else {
-                        Question.findByIdAndUpdate(questionId, {$push: {answers: answerSaved._id}}, function (err, question) {
+                        Question.findByIdAndUpdate(questionId, {$push: {answers: answerSaved._id}, $inc: {numAnswers: 1}}, function (err, question) {
                             if (err) {
                                 res.status(500).json({error: "could not save answer"});
                             } else {
