@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 
 var answerSchema = mongoose.Schema({
     answerer: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    answererName: String,
     upvoters: [
         {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
     ],
@@ -9,7 +10,7 @@ var answerSchema = mongoose.Schema({
     downvoters: [
         {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
     ],
-    numUpvotes: Number,
+    numDownvotes: Number,
     text: String,
     time: { type: Date, default: Date.now }
 });
