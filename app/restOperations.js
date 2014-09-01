@@ -5,6 +5,7 @@ var Question = require('../models/question');
 var Answer = require('../models/answer');
 var User = require('../models/user');
 var jwt = require('jwt-simple');
+var textUtils = require('../utils/textutils');
 
 var serverError = function (res) {
     console.log("sending error");
@@ -128,25 +129,25 @@ var setupFunctions = function (passport) {
 
     exports.postQuestion = function (req, res) {
         var questionTitle = req.body.questionTitle;
-        if (isNullOrEmpty(questionTitle)) {
+        if (textUtils.isEmpty(questionTitle)) {
             res.status(400).json({error: "please provide 'questionTitle' property"});
             return;
         }
 
         var text = req.body.questionDescription;
-        if (isNullOrEmpty(text)) {
+        if (textUtils.isEmpty(text)) {
             res.status(400).json({error: "please provide 'questionDescription' property"});
             return;
         }
 
         var category = global.questionCategories[req.body.categoryIndex];
-        if (isNullOrEmpty(category)) {
+        if (textUtils.isEmpty(category)) {
             res.status(400).json({error: "please provide valid 'categoryIndex' number"});
             return;
         }
 
         var token = req.body.token;
-        if (isNullOrEmpty(category)) {
+        if (textUtils.isEmpty(category)) {
             res.status(400).json({error: "please provide valid 'token'"});
             return;
         }
@@ -170,7 +171,7 @@ var setupFunctions = function (passport) {
 
     exports.getUser = function (req, res) { //TODO format the output of questions/answers correctly
         var token = req.query.token;
-        if (isNullOrEmpty(token)) {
+        if (textUtils.isEmpty(token)) {
             return res.status(400).json({error: "please provide 'token' property"});
         }
 
@@ -229,20 +230,20 @@ var setupFunctions = function (passport) {
 
     exports.postAnswer = function (req, res) {
         var token = req.body.token;
-        if (isNullOrEmpty(token)) {
+        if (textUtils.isEmpty(token)) {
             res.status(400).json({error: "please provide 'token' property"});
             return;
         }
 
         var questionId = req.body.questionId;
-        if (isNullOrEmpty(questionId)) {
+        if (textUtils.isEmpty(questionId)) {
             res.status(400).json({error: "please provide 'questionId' property"});
             console.log("no questionId");
             return;
         }
 
         var text = req.body.answerBody;
-        if (isNullOrEmpty(text)) {
+        if (textUtils.isEmpty(text)) {
             res.status(400).json({error: "please provide 'answerBody' property"});
             console.log("no text");
             return;
@@ -314,9 +315,4 @@ function getUserFromToken(token, next) {
     User.findById(id.userId, function (err, doc) {
         next(err, doc);
     });
-}
-
-function isNullOrEmpty(string) {
-    if (!string) return true;
-    return !/\S/.test(string);
 }

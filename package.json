@@ -36,6 +36,8 @@
         "express-session": "latest",
         "mongodb": "latest",
         "mongoose": "latest",
+        "should": "latest",
+        "supertest": "latest",
         "morgan": "latest",
         "passport": "latest",
         "passport-local": "latest",
