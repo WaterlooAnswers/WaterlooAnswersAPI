@@ -1,10 +1,15 @@
 /**
  * Created by Sahil Jain on 01/09/2014.
  */
+
+process.env.NODE_ENV = 'test'
+
 var assert = require("assert");
 var request = require('supertest');
 var should = require('should');
 var app = require('../server');
+var mongoose = require('mongoose');
+var jwt = require('jwt-simple');
 
 describe('API Tests (Acceptance Tests)', function () {
     describe('GET /categories', function () {
@@ -35,4 +40,57 @@ describe('API Tests (Acceptance Tests)', function () {
             });
         });
     });
+    describe('POST /signup', function () {
+        before(function (done) {
+            clearUserCollection(done);
+        });
+        it('should return error when no username provided', function (done) {
+            request(app).post('/api/signup').expect(400).end(function (err, res) {
+                res.body.error.should.equal("Could not create user. Please provide username");
+                done();
+            });
+        });
+        it('should return error when no password provided', function (done) {
+            request(app).post('/api/signup?email=hello').expect(400).end(function (err, res) {
+                res.body.error.should.equal("Could not create user. Please provide password");
+                done();
+            });
+        });
+        it('should return error when no firstName provided', function (done) {
+            request(app).post('/api/signup?email=hello&password=hello').expect(400).end(function (err, res) {
+                res.body.error.should.equal("Could not create user. Please provide firstName");
+                done();
+            });
+        });
+        it('should create user when credentials provided', function (done) {
+            request(app).post('/api/signup?email=hello&password=hello&firstName=hello').expect(200).end(function (err, res) {
+                res.body.username.should.equal("hello");
+                res.body.firstName.should.equal("hello");
+                res.body.token.should.not.be.empty;
+                var decoded = jwt.decode(res.body.token, "testsecret");
+                decoded.userId.should.not.be.empty;
+                done();
+            });
+        });
+        it('should not create user when email already in use', function (done) {
+            request(app).post('/api/signup?email=hello&password=hello&firstName=hello').expect(401).end(function (err, res) {
+                res.body.error.should.equal("email already in use");
+                done();
+            });
+        });
+        after(function (done) {
+            clearUserCollection(done);
+        });
+    });
+    describe("POST /login", function () {
+        before(function (done) {
+
+        });
+    });
 });
+
+function clearUserCollection(done) {
+    mongoose.connection.collections.users.remove(function () {
+        return done();
+    });
+}

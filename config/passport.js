@@ -35,26 +35,31 @@ module.exports = function (passport) {
             passwordField: 'password',
             passReqToCallback: true // allows us to pass back the entire request to the callback
         },
-        function (req, input, password, done) {
+        function (req, input, password, done) { //TODO use post data, not url params for info
             var email = input.toLowerCase();
             // asynchronous
             // User.findOne wont fire unless data is sent back
             process.nextTick(function () {
-                console.log("signing up with email " + email + " and pass " + password);
+                console.log("signing up with email " + email + " and password " + password);
 
                 // find a user whose email is the same as the forms email
                 // we are checking to see if the user trying to login already exists
                 User.findOne({ 'email': email }, function (err, user) {
+                    console.log("db query done");
                     // if there are any errors, return the error
-                    if (err)
+                    if (err) {
+                        console.log("database error");
                         return done(err);
+                    }
                     // check to see if theres already a user with that email
                     if (user) {
-                        return done(null, false, req.flash('signupMessage', 'Sorry, that email is already taken.'));
+                        console.log("user already exists");
+                        return done("email already in use", false);
                     } else if (!req.query.firstName || req.query.firstName === "") {
+                        console.log("no first name");
                         return done(null, false);
                     } else {
-
+                        console.log("lets create the user");
                         // if there is no user with that email
                         // create the user
                         var newUser = new User();

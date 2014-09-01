@@ -4,8 +4,8 @@
 var Question = require('../models/question');
 var Answer = require('../models/answer');
 var User = require('../models/user');
-var jwt = require('jwt-simple');
 var textUtils = require('../utils/textutils');
+var tokenUtils = require('../utils/tokenutils');
 
 var serverError = function (res) {
     console.log("sending error");
@@ -112,7 +112,7 @@ var setupFunctions = function (passport) {
         if (!token) {
             return res.status(400).json({error: "please give a valid token"});
         }
-        getUserFromToken(token, function (err, user) {
+        tokenUtils.getUserFromToken(token, function (err, user) {
             if (!user) {
                 return res.status(400).json({error: "Invalid token"});
             } else {
@@ -152,7 +152,7 @@ var setupFunctions = function (passport) {
             return;
         }
 
-        getUserFromToken(token, function (err, user) {
+        tokenUtils.getUserFromToken(token, function (err, user) {
             if (err || !user) {
                 return res.status(401).json({error: "invalid token"});
             }
@@ -175,7 +175,7 @@ var setupFunctions = function (passport) {
             return res.status(400).json({error: "please provide 'token' property"});
         }
 
-        getUserFromToken(token, function (err, user) {
+        tokenUtils.getUserFromToken(token, function (err, user) {
             if (!user) return res.status(400).json({error: "token invalid"});
             var out = {};
             out.userId = user._id;
@@ -249,7 +249,7 @@ var setupFunctions = function (passport) {
             return;
         }
 
-        getUserFromToken(token, function (err, doc) { //FIXME there's currently a link between question->answer and answer->question, make it one way
+        tokenUtils.getUserFromToken(token, function (err, doc) { //FIXME there's currently a link between question->answer and answer->question, make it one way
             if (err || !doc) {
                 res.status(401).json({error: "incorrect token"});
             } else {
@@ -279,40 +279,32 @@ var setupFunctions = function (passport) {
             if (!user) {
                 return res.status(401).json({error: "invalid username or password"});
             }
-            var token = generateTokenFromUser(user);
-            console.log(token);
+            var token = tokenUtils.generateTokenFromUser(user);
             res.json({token: token});
         })(req, res, next);
     };
 
     exports.postSignup = function (req, res, next) {
+        if (!req.query.email) {
+            return res.status(400).json({error: "Could not create user. Please provide username"});
+        }
+        if (!req.query.password) {
+            return res.status(400).json({error: "Could not create user. Please provide password"});
+        }
+        if (!req.query.firstName) {
+            return res.status(400).json({error: "Could not create user. Please provide firstName"});
+        }
         passport.authenticate('local-signup', {session: false}, function (err, user, info) {
             if (err) {
-                return next(err);
+                return res.status(401).json({error: err});
             }
             if (!user) {
                 return res.status(401).json({error: "did not create user"});
             }
-            var token = generateTokenFromUser(user);
+            var token = tokenUtils.generateTokenFromUser(user);
             res.json({success: true, username: user.email, firstName: user.firstName, token: token});
         })(req, res, next);
     };
 
     return exports;
 };
-
-function generateTokenFromUser(user) {
-    return jwt.encode({userId: user._id}, "mysecret");
-}
-
-function getUserFromToken(token, next) {
-    var id;
-    try {
-        id = jwt.decode(token, "mysecret");
-    } catch (ex) {
-        return next(true, null);
-    }
-    User.findById(id.userId, function (err, doc) {
-        next(err, doc);
-    });
-}
