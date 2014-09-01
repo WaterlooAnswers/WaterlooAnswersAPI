@@ -38,6 +38,7 @@
         "mongoose": "latest",
         "should": "latest",
         "supertest": "latest",
+        "mocha": "latest",
         "morgan": "latest",
         "passport": "latest",
         "passport-local": "latest",
@@ -45,6 +46,9 @@
     },
     "devDependencies": {},
     "bundleDependencies": [],
+    "scripts": {
+        "test": "mocha test"
+    },
 
     "private": true,
     "main": "server.js"
