@@ -80,4 +80,5 @@ var SampleApp = function () {
 var zapp = new SampleApp();
 zapp.initialize();
 zapp.start();
+module.exports = zapp.app;
 
