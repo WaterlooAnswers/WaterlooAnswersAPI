@@ -114,7 +114,7 @@ var setupFunctions = function (passport) {
         }
         tokenUtils.getUserFromToken(token, function (err, user) {
             if (!user) {
-                return res.status(400).json({error: "Invalid token"});
+                return res.status(400).json({error: "please give a valid token"});
             } else {
                 Question.remove({_id: id, asker: user._id}, function (err, doc) {
                     if (err) {

@@ -11,6 +11,7 @@ var app = require('../server');
 var mongoose = require('mongoose');
 var jwt = require('jwt-simple');
 var User = require('../models/user');
+var Question = require('../models/question');
 
 describe('API Tests (Acceptance Tests)', function () {
     describe('GET /categories', function () {
@@ -163,7 +164,58 @@ describe('API Tests (Acceptance Tests)', function () {
             token.should.not.be.empty;
             request(app).post('/api/questions').send({questionTitle: "title", questionDescription: "description", categoryIndex: 2, token: token}).expect(200).end(function (err, res) {
                 res.body.result.should.equal("Successfully added question!");
-                done();
+                Question.find({}, function (err, docs) {
+                    should.not.exist(err);
+                    docs.length.should.equal(1);
+                    done();
+                });
+            });
+        });
+    });
+    describe("DELETE /questions", function () {
+        var question;
+        var user;
+        before(function (done) {
+            createTestUser("email", "password", "firstName", function (newUser) {
+                user = newUser;
+                createTestQuestion("title", "description", user._id, 1, function (doc) {
+                    question = doc;
+                    done();
+                });
+            });
+        });
+        after(function (done) {
+            clearUserCollection(function () {
+                clearQuestionCollection(done);
+            });
+        });
+        it("should not delete if invalid token", function (done) {
+            request(app).delete('/api/questions').send({id: "blah"}).expect(401).end(function (err, res) {
+                res.body.error.should.equal("please give a valid token");
+                Question.find({}, function (err, docs) {
+                    should.not.exist(err);
+                    docs.length.should.equal(1);
+                    done();
+                });
+            });
+        });
+        it("should not delete if invalid id", function (done) {
+            request(app).delete('/api/questions').send({id: "blah", token: jwt.encode({userId: user._id}, "testsecret")}).expect(400).end(function (err, res) {
+                res.body.error.should.equal("Could not find question, please form your requests according to the documentation");
+                Question.find({}, function (err, docs) {
+                    should.not.exist(err);
+                    docs.length.should.equal(1);
+                    done();
+                });
+            });
+        });
+        it("should delete if valid id and token", function (done) {
+            request(app).delete('/api/questions').send({id: question._id, token: jwt.encode({userId: user._id}, "testsecret")}).expect(204).end(function (err, res) {
+                Question.find({}, function (err, docs) {
+                    should.not.exist(err);
+                    docs.length.should.equal(0);
+                    done();
+                });
             });
         });
     });
@@ -181,6 +233,17 @@ function createTestUser(email, password, firstName, done) {
             throw err;
         }
         return done(newUser);
+    });
+}
+
+function createTestQuestion(questionTitle, text, askerId, categoryIndex, done) {
+    var q1 = new Question({name: questionTitle, text: text, asker: askerId, category: global.questionCategories[categoryIndex]});
+    q1.save(function (err, question) {
+        if (err) {
+            throw err;
+        } else {
+            done(question);
+        }
     });
 }
 
