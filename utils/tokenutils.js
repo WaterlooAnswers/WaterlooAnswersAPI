@@ -3,6 +3,7 @@
  */
 
 var jwt = require("jwt-simple");
+var User = require("../models/user");
 var secret;
 if (process.env.NODE_ENV == 'test') {
     secret = "testsecret";
@@ -15,13 +16,15 @@ exports.generateTokenFromUser = function (user) {
 };
 
 exports.getUserFromToken = function (token, next) {
-    var id;
+    var claims;
     try {
-        id = jwt.decode(token, secret);
+        claims = jwt.decode(token, secret);
     } catch (ex) {
         return next(true, null);
     }
-    User.findById(id.userId, function (err, doc) {
-        next(err, doc);
+    User.findById(claims.userId, function (err, doc) {
+        if (err) {
+        }
+        return next(err, doc);
     });
 };

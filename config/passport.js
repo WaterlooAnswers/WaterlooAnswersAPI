@@ -48,7 +48,6 @@ module.exports = function (passport) {
                     console.log("db query done");
                     // if there are any errors, return the error
                     if (err) {
-                        console.log("database error");
                         return done(err);
                     }
                     // check to see if theres already a user with that email

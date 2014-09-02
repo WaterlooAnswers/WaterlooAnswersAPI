@@ -147,16 +147,14 @@ var setupFunctions = function (passport) {
         }
 
         var token = req.body.token;
-        if (textUtils.isEmpty(category)) {
+        if (textUtils.isEmpty(token)) {
             res.status(400).json({error: "please provide valid 'token'"});
             return;
         }
-
         tokenUtils.getUserFromToken(token, function (err, user) {
             if (err || !user) {
                 return res.status(401).json({error: "invalid token"});
             }
-
             var q1 = new Question({name: questionTitle, text: text, asker: user._id, category: category});
             q1.save(function (err, q1) {
                 if (err) {
@@ -272,6 +270,9 @@ var setupFunctions = function (passport) {
     };
 
     exports.getLoginToken = function (req, res, next) {
+        if (!req.query.email || !req.query.password) {
+            return res.status(400).json({error: "please provide an email and password"});
+        }
         passport.authenticate('local-login', {session: false}, function (err, user, info) {
             if (err) {
                 return next(err);

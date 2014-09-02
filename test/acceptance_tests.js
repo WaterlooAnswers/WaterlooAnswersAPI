@@ -2,7 +2,7 @@
  * Created by Sahil Jain on 01/09/2014.
  */
 
-process.env.NODE_ENV = 'test'
+process.env.NODE_ENV = 'test';
 
 var assert = require("assert");
 var request = require('supertest');
@@ -10,6 +10,7 @@ var should = require('should');
 var app = require('../server');
 var mongoose = require('mongoose');
 var jwt = require('jwt-simple');
+var User = require('../models/user');
 
 describe('API Tests (Acceptance Tests)', function () {
     describe('GET /categories', function () {
@@ -83,14 +84,114 @@ describe('API Tests (Acceptance Tests)', function () {
         });
     });
     describe("POST /login", function () {
+        var user;
         before(function (done) {
-
+            createTestUser("testemail", "testpassword", "testfirstname", function (doc) {
+                user = doc;
+                done();
+            });
+        });
+        after(function (done) {
+            clearUserCollection(done);
+        });
+        it("should not log in with missing credentials", function (done) {
+            request(app).post('/api/login?email=hello').expect(400).end(function (err, res) {
+                res.body.error.should.equal("please provide an email and password");
+                done();
+            });
+        });
+        it("should not log in with invalid credentials", function (done) {
+            request(app).post('/api/login?email=hello&password=hello').expect(401).end(function (err, res) {
+                res.body.error.should.equal("invalid username or password");
+                done();
+            });
+        });
+        it("should log in with valid credentials and give back token", function (done) {
+            request(app).post('/api/login?email=testemail&password=testpassword').expect(200).end(function (err, res) {
+                res.body.token.should.not.be.empty;
+                var decoded = jwt.decode(res.body.token, "testsecret");
+                decoded.userId.should.equal(String(user._id));
+                done();
+            });
+        });
+    });
+    describe("POST /questions", function () {
+        var user;
+        before(function (done) {
+            createTestUser("email", "password", "firstName", function (newUser) {
+                user = newUser;
+                done();
+            });
+        });
+        after(function (done) {
+            clearUserCollection(function () {
+                clearQuestionCollection(done);
+            });
+        });
+        it("should not post if missing questionTitle", function (done) {
+            request(app).post('/api/questions').expect(400).end(function (err, res) {
+                res.body.error.should.equal("please provide 'questionTitle' property");
+                done();
+            });
+        });
+        it("should not post if missing questionDescription", function (done) {
+            request(app).post('/api/questions').send({questionTitle: "title"}).expect(400).end(function (err, res) {
+                res.body.error.should.equal("please provide 'questionDescription' property");
+                done();
+            });
+        });
+        it("should not post if missing categoryIndex", function (done) {
+            request(app).post('/api/questions').send({questionTitle: "title", questionDescription: "description"}).expect(400).end(function (err, res) {
+                res.body.error.should.equal("please provide valid 'categoryIndex' number");
+                done();
+            });
+        });
+        it("should not post if missing token", function (done) {
+            request(app).post('/api/questions').send({questionTitle: "title", questionDescription: "description", categoryIndex: 2}).expect(400).end(function (err, res) {
+                res.body.error.should.equal("please provide valid 'token'");
+                done();
+            });
+        });
+        it("should not post if invalid token", function (done) {
+            request(app).post('/api/questions').send({questionTitle: "title", questionDescription: "description", categoryIndex: 2, token: "blahblahblah"}).expect(400).end(function (err, res) {
+                res.body.error.should.equal("invalid token");
+                done();
+            });
+        });
+        it("should post question when given valid info", function (done) {
+            var token = jwt.encode({userId: user._id}, "testsecret");
+            token.should.not.be.empty;
+            request(app).post('/api/questions').send({questionTitle: "title", questionDescription: "description", categoryIndex: 2, token: token}).expect(200).end(function (err, res) {
+                res.body.result.should.equal("Successfully added question!");
+                done();
+            });
         });
     });
 });
 
+function createTestUser(email, password, firstName, done) {
+    var newUser = new User();
+    newUser.email = email;
+    newUser.password = newUser.generateHash(password);
+    newUser.firstName = firstName;
+    newUser.dateCreated = Date.now();
+    newUser.save(function (err) {
+        if (err) {
+            console.log("error creating user");
+            throw err;
+        }
+        return done(newUser);
+    });
+}
+
 function clearUserCollection(done) {
     mongoose.connection.collections.users.remove(function () {
+        return done();
+    });
+}
+
+function clearQuestionCollection(done) {
+    mongoose.connection.collections.questions.remove(function () {
         return done();
     });
 }
