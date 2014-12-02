@@ -1,19 +1,8 @@
 var mongoose = require('mongoose');
 
 global.questionCategories = [
-    'Admissions/Program Advice',
-'Campus Facilities',
-'Co-op/Jobmine',
-'Course Selection',
-'Extracurriculars',
-'Finances',
-'General Advice',
-'Homework/Exams',
-'Parties/Student Life',
-'Programming',
-'Residence',
-'Technology/Startups',
-'Other'];
+    'SE212', 'ECE222', 'CS241', 'STAT206', 'CHE102'
+];
 
 var questionSchema = mongoose.Schema({
 	asker: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
