@@ -4,6 +4,10 @@ node_js:
   - "0.10"
 services:
   - mongodb
+before:
+  - npm install -g istanbul
+  - npm install -g mocha
 after_success:
-- ./node_modules/.bin/jscoverage lib lib-cov
-- ./node_modules/.bin/mocha test -R mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js
+  - istanbul cover _mocha -- -R spec test/Acceptance_Tests
+  - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+  - npm run report-coverage
