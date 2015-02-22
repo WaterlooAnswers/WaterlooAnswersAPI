@@ -8,6 +8,6 @@ before:
   - npm install -g istanbul
   - npm install -g mocha
 after_success:
-  - istanbul cover _mocha -- -R spec test/Acceptance_Tests
+  - istanbul cover ./node_modules/.bin/_mocha -- -R spec test/Acceptance_Tests
   - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
   - npm run report-coverage
