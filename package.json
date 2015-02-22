@@ -44,7 +44,8 @@
     "coveralls": "^2.11.2"
   },
   "devDependencies": {
-    "istanbul": "^0.3.6"
+    "istanbul": "^0.3.6",
+    "mocha-lcov-reporter": "0.0.1"
   },
   "bundleDependencies": [],
   "scripts": {
