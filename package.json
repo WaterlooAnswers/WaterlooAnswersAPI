@@ -1,55 +1,56 @@
 {
-    "name": "ASKUW-Alpha-1",
-    "version": "1.0.0",
-    "description": "A system to ask questions",
-    "keywords": [
-        "passportjs",
-        "Node.js",
-        "application",
-        "expressjs"
-    ],
-    "author": {
-        "name": "Sahil Jain",
-        "email": "sahil@sahiljain.ca",
-        "url": "http://www.sahiljain.ca"
-    },
-    "homepage": "http://ask.sahiljain.ca/",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/openshift/origin-server"
-    },
-
-    "engines": {
-        "node": ">= 0.6.0",
-        "npm": ">= 1.0.0"
-    },
-
-    "dependencies": {
-        "jwt-simple": "latest",
-        "bcrypt-nodejs": "latest",
-        "body-parser": "latest",
-        "connect-flash": "latest",
-        "connect-mongo": "latest",
-        "cookie-parser": "latest",
-        "ejs": "latest",
-        "express": "latest",
-        "express-session": "latest",
-        "mongodb": "latest",
-        "mongoose": "latest",
-        "should": "latest",
-        "supertest": "latest",
-        "mocha": "latest",
-        "morgan": "latest",
-        "passport": "latest",
-        "passport-local": "latest",
-        "socket.io": "latest"
-    },
-    "devDependencies": {},
-    "bundleDependencies": [],
-    "scripts": {
-        "test": "mocha test"
-    },
-
-    "private": true,
-    "main": "server.js"
+  "name": "ASKUW-Alpha-1",
+  "version": "1.0.0",
+  "description": "A system to ask questions",
+  "keywords": [
+    "passportjs",
+    "Node.js",
+    "application",
+    "expressjs"
+  ],
+  "author": {
+    "name": "Sahil Jain",
+    "email": "sahil@sahiljain.ca",
+    "url": "http://www.sahiljain.ca"
+  },
+  "homepage": "http://ask.sahiljain.ca/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openshift/origin-server"
+  },
+  "engines": {
+    "node": ">= 0.6.0",
+    "npm": ">= 1.0.0"
+  },
+  "dependencies": {
+    "jwt-simple": "latest",
+    "bcrypt-nodejs": "latest",
+    "body-parser": "latest",
+    "connect-flash": "latest",
+    "connect-mongo": "latest",
+    "cookie-parser": "latest",
+    "ejs": "latest",
+    "express": "latest",
+    "express-session": "latest",
+    "mongodb": "latest",
+    "mongoose": "latest",
+    "should": "latest",
+    "supertest": "latest",
+    "mocha": "latest",
+    "morgan": "latest",
+    "passport": "latest",
+    "passport-local": "latest",
+    "socket.io": "latest",
+    "coveralls": "^2.11.2"
+  },
+  "devDependencies": {
+    "istanbul": "^0.3.6",
+    "mocha-lcov-reporter": "0.0.1"
+  },
+  "bundleDependencies": [],
+  "scripts": {
+    "test": "mocha test"
+  },
+  "private": true,
+  "main": "server.js"
 }
