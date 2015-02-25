@@ -6,8 +6,44 @@ The WaterlooAnswers API is a university-wide answer service similar to Yahoo Ans
 
 # WaterlooAnswers API Root [http://askuw.sahiljain.ca/api/]
 
+# Group Login Flow
+How to get a session token on login, and sign up.
+
+## /login{?email,password}
+### POST
+Log in.
+
++ Parameters
+    + email (required, string, `abc`) ... account login email
+    + password (required, string, `123`) ... account password
++ Response 200 (application/json; charset=utf-8)
+    + Body
+
+            {
+                "sessionToken": "xyzxyzxyzxyzxyzyxyzx323"
+            }
+
+## /signup{?email,password,firstName}
+### POST
+Sign up.
+
++ Parameters
+    + email (required, string, `abc`) ... account login email
+    + password (required, string, `123`) ... account password
+    + firstName (required, string, `Bob`) ... account first name
++ Response 200 (application/json; charset=utf-8)
+    + Body
+
+            {
+                "success": true, 
+                "username": "bob@uwaterloo.ca", 
+                "firstName": "Bob", 
+                "token": "some-token"
+            }
+
 # Group User
 Information about the user that is currently logged in
+
 ## /user{?token}
 ### GET
 Get user information
@@ -18,46 +54,39 @@ Get user information
     + Body
 
             {
-                "userId": "",
-                "firstName": "",
-                "email": "",
-                "dateJoined": "",
-                "questionsAsked": [],
-                "answersGiven": []
-            }
-
-
-# Group Login Flow
-How to get a session token on login, and sign up.
-
-## /login{?username,password}
-### POST
-Log in.
-
-+ Parameters
-    + username (required, string, `abc`) ... account login email/username
-    + password (required, string, `123`) ... account password
-+ Response 200 (application/json; charset=utf-8)
-    + Body
-
-            {
-                "sessionToken": "xyzxyzxyzxyzxyzyxyzx323"
-            }
-
-## /signup{?username,password}
-### POST
-Sign up.
-
-+ Parameters
-    + username (required, string, `abc`) ... account login email/username
-    + password (required, string, `123`) ... account password
-+ Response 200 (application/json; charset=utf-8)
-    + Body
-
-            {
-                "success":true,
-                "sessionToken": "xyzxyzxyzxyzxyzyxyzx323"
-            }
+              "userId": "some-id",
+              "firstName": "bob",
+              "email": "bob@uwaterloo.ca",
+              "dateJoined": "2015-02-25T07:22:32.648Z",
+              "questionsAsked": [
+                {
+                  "__v": 0,
+                  "_id": "547d6f480f55b4000019be6b",
+                  "asker": "5312dfedd9e81a00002e7c17",
+                  "category": "CS241",
+                  "name": "What are the two ways to branch to a label?",
+                  "numAnswers": 2,
+                  "text": "This was a question from the 2015 final.",
+                  "viewers": [],
+                  "answers": [
+                    "54800991e5588670dad8b401",
+                    "54ed289b7bdd153a9f590781"
+                  ],
+                  "time": "2014-12-02T07:50:32.200Z",
+                  "favourites": []
+                }
+              ],
+              "answersGiven": [
+                {
+                  "questionId": "547d6f480f55b4000019be6b",
+                  "questionName": "What are the two ways to branch to a label?",
+                  "questionDescription": "This was a question from the 2015 final.",
+                  "answerId": "54800991e5588670dad8b401",
+                  "answerText": "You can either write beq $0, $0, label, or store the label's address in a register and jr to the register.",
+                  "answerTime": "2014-12-04T07:13:21.906Z"
+                }
+              ]
+            }    
 
 # Group Questions
 
@@ -99,6 +128,7 @@ Get a single question by ID:
                     }
                 ],
                 favourites: [ ],
+                numVotes: 0,
                 timeAsked: "2014-03-25T16:35:54.021Z"
             }
 
@@ -195,10 +225,15 @@ Add a question to the database:
 # Group Answers
 ## Post an Answer to a Question [/answers{?questionId,answerBody,token}]
 ### POST
-+ Parameters
-    + questionId (string, required) ... The ID of the question you want to answer
-    + answerBody (string, required) ... The main answer text to the question
-    + token (string, required, `xyzxyzxyyzyyzxy`) ... Your web token given by the '/login' endpoint.
++ Request (application/json)
+
+        {
+            "questionId": "question-id",
+            "answerBody": "This is my answer",
+            "token": "login-token"
+        }
+
+    
 
 + Response 200 (application/json; charset=utf-8)
     + Body
