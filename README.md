@@ -16,3 +16,10 @@ Project Management is done through [Pivotal Tracker](https://www.pivotaltracker.
 6. Open a new terminal and run `mongod --dbpath "./database"`. Keep this terminal open while running your local server.
 5. Run `node server` to start the local server on *localhost*.
 6. Go to `localhost:8080` in your browser!
+
+## How to Contribute
+
+1. Fork this repo
+2. Make changes
+3. Make a pull request!
+4. The build must pass, and you must add test cases for any features you've added.
