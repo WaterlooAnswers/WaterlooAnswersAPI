@@ -6,6 +6,27 @@ The WaterlooAnswers API is a university-wide answer service similar to Yahoo Ans
 
 # WaterlooAnswers API Root [http://askuw.sahiljain.ca/api/]
 
+# Group User
+Information about the user that is currently logged in
+## /user{?token}
+### GET
+Get user information
+
++ Parameters
+    + token (string, required, `xyzxyzxyyzyyzxy`) ... Your web token given by the '/login' endpoint.
++ Response 200 (application/json; charset=utf-8)
+    + Body
+
+            {
+                "userId": "",
+                "firstName": "",
+                "email": "",
+                "dateJoined": "",
+                "questionsAsked": [],
+                "answersGiven": []
+            }
+
+
 # Group Login Flow
 How to get a session token on login, and sign up.
 
