@@ -90,8 +90,8 @@ Get user information
 
 # Group Questions
 
-## Retrieve Question By ID [/questions/{id}]
-## GET
+## Get Single Question [/questions/{id}]
+### GET
 Get a single question by ID: 
 + Parameters
     + id (required, string, `5317e88ad5dcc70c283f450a`) ... ID of the question you want
@@ -132,26 +132,32 @@ Get a single question by ID:
                 timeAsked: "2014-03-25T16:35:54.021Z"
             }
 
-## Delete your Question by ID [/questions/{?id,token}]
-## DELETE
+## Questions [/questions]
+### DELETE
 Delete a single question by ID:
-+ Parameters
-    + id (required, string, `5317e88ad5dcc70c283f450a`) ... ID of the question you want to delete
-    + token (required, string, `xyzxyzxyzxyzxyzxyzxyzyxyz`) ... Your web token given by the '/login' endpoint.
++ Request (application/json)
+
+        {
+            "id": "question_id",
+            "token": "login_token"
+        }
+    
 + Response 204
 
-## Add a Question [/questions/{?questionTitle,questionDescription,categoryIndex,token}]
-## POST
+### POST
 Add a question to the database:
-+ Parameters
-    + questionTitle (string, required, `My Question`) ... the title of the question
-    + questionDescription (string, required, `Is there anyone at Waterloo who can beat Dr.Mansour at arm wrestling?`) ... the title of the question
-    + categoryIndex (number, required, `3`) ... the title of the question
-    + token (string, required, `xyzxyzxyyzyyzxy`) ... Your web token given by the '/login' endpoint.
-    
++ Request (application/json)
+
+        {
+            "questionTitle": "My Question Title",
+            "questionDescription": "The rest of my question",
+            "categoryIndex": 3,
+            "token": "login_token"
+        }
+
 + Response 200
 
-## Upvote a question [/questions/{id}/upvote{?token}]
+## TODO Upvote a question [/questions/{id}/upvote{?token}]
 ### PUT
 + Parameters
     + id (required, string, `5317e88ad5dcc70c283f450a`) ... ID of the question you want to upvote
@@ -163,7 +169,7 @@ Add a question to the database:
                 "success":true
             }
 
-## Downvote a question [/questions/{id}/downvote{?token}]
+## TODO Downvote a question [/questions/{id}/downvote{?token}]
 ### PUT
 + Parameters
     + id (required, string) ... ID of the question you want to downvote
@@ -223,7 +229,7 @@ Add a question to the database:
             ]
 
 # Group Answers
-## Post an Answer to a Question [/answers{?questionId,answerBody,token}]
+## Post an Answer to a Question [/answers]
 ### POST
 + Request (application/json)
 
@@ -233,13 +239,13 @@ Add a question to the database:
             "token": "login-token"
         }
 
-    
-
 + Response 200 (application/json; charset=utf-8)
     + Body
     
             {
-                "answerId":"5312dfedd9e81a00002e7c17"
+                result: "Successfully added answer!", 
+                questionId: "question_id", 
+                answerId: "answerSaved_id"
             }
 
 # Group Categories
