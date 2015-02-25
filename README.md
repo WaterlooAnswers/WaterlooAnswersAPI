@@ -8,8 +8,11 @@ Project Management is done through [Pivotal Tracker](https://www.pivotaltracker.
 # Install Notes
 
 1. Install [Node](http://nodejs.org/). This will also install `npm`.
+2. Install [MongoDB](http://www.mongodb.org/downloads).
 2. Clone this repo and navigate to the project root folder.
 3. Run `git submodule update --init --recursive`.
 4. Run `npm install` (This will download and install dependencies into */node_modules*.
-5. Run `node server` to start the server on *localhost*.
+5. Run `mkdir database`.
+6. Open a new terminal and run `mongod --dbpath "./database"`. Keep this terminal open while running your local server.
+5. Run `node server` to start the local server on *localhost*.
 6. Go to `localhost:8080` in your browser!
