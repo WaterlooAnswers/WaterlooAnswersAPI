@@ -36,7 +36,6 @@
     "mongoose": "latest",
     "should": "latest",
     "supertest": "latest",
-    "mocha": "latest",
     "morgan": "latest",
     "passport": "latest",
     "passport-local": "latest",
@@ -44,12 +43,13 @@
     "coveralls": "^2.11.2"
   },
   "devDependencies": {
+    "mocha": "latest",
     "istanbul": "^0.3.6",
     "mocha-lcov-reporter": "0.0.1"
   },
   "bundleDependencies": [],
   "scripts": {
-    "test": "mocha test"
+    "test": "mocha --recursive"
   },
   "private": true,
   "main": "server.js"
