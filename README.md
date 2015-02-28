@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/WaterlooAnswers/WaterlooAnswersAPI.svg?branch=master)](https://travis-ci.org/WaterlooAnswers/WaterlooAnswersAPI)
-[![Coverage Status](https://coveralls.io/repos/wrahman0/WaterlooAnswersAPI/badge.svg?branch=master)](https://coveralls.io/r/wrahman0/WaterlooAnswersAPI?branch=master)
+[![Coverage Status](https://coveralls.io/repos/WaterlooAnswers/WaterlooAnswersAPI/badge.svg)](https://coveralls.io/r/WaterlooAnswers/WaterlooAnswersAPI)
 
 Please refer to the [API Documentation](http://docs.waterlooanswers.apiary.io/ "API Documentation"). 
 
