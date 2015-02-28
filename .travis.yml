@@ -8,6 +8,6 @@ before:
   - npm install -g istanbul
   - npm install -g mocha
 after_success:
-  - istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec
+  - istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec --recursive
   - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
   - rm -rf ./coverage
