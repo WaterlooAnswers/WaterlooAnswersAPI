@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/sahiljain/WaterlooAnswersAPI.svg?branch=master)](https://travis-ci.org/sahiljain/WaterlooAnswersAPI)
+[![Build Status](https://travis-ci.org/WaterlooAnswers/WaterlooAnswersAPI.svg?branch=master)](https://travis-ci.org/WaterlooAnswers/WaterlooAnswersAPI)
 [![Coverage Status](https://coveralls.io/repos/wrahman0/WaterlooAnswersAPI/badge.svg?branch=master)](https://coveralls.io/r/wrahman0/WaterlooAnswersAPI?branch=master)
 
 Please refer to the [API Documentation](http://docs.waterlooanswers.apiary.io/ "API Documentation"). 
