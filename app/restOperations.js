@@ -178,6 +178,7 @@ var setupFunctions = function (passport) {
             var out = {};
             out.userId = user._id;
             out.firstName = user.firstName;
+            out.points = user.points;
             out.email = user.email;
             out.dateJoined = user.dateCreated;
             Question.find({'asker': user._id}, function (err, questionsAsked) {

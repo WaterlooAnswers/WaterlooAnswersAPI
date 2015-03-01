@@ -8,7 +8,8 @@ var userSchema = mongoose.Schema({
     firstName: String,
     email: {type: String, lowercase: true},
     password: String,
-    dateCreated: { type: Date, default: Date.now }
+    dateCreated: { type: Date, default: Date.now },
+    points: { type: Number, default: 0 }
 });
 
 // generating a hash
