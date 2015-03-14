@@ -44,6 +44,8 @@ function createRestEndpoints(app, passport) {
 
     app.get('/api/user', userOperations.getUser);
 
+    app.get('/api/user/:id', userOperations.getUserById);
+
     app.post('/api/login', userOperations.getLoginToken);
 
     app.post('/api/signup', userOperations.postSignup);

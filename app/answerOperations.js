@@ -36,7 +36,7 @@ module.exports = function () {
                         res.status(500).json({error: Constants.ERROR.SAVE.ANSWER});
                     } else {
                         Question.findByIdAndUpdate(questionId, {$push: {answers: answerSaved._id}, $inc: {numAnswers: 1}}, function (err, question) {
-                            if (err) {//TODO turn this into a findbyid, and then update on the docs
+                            if (err) {
                                 res.status(500).json({error: Constants.ERROR.SAVE.ANSWER});
                             } else {
                                 res.json({result: Constants.SUCCESS.SAVE.ANSWER, questionId: question._id, answerId: answerSaved._id});

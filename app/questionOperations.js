@@ -3,8 +3,10 @@
  */
 var Question = require('../models/question');
 var _ = require('lodash');
+var Answer = require('../models/answer');
 var tokenUtils = require('../utils/tokenutils');
 var Constants = require('../constants');
+var async = require('async');
 
 module.exports = function () {
     return setupFunctions();
@@ -103,13 +105,18 @@ var setupFunctions = function () {
             if (!user) {
                 return res.status(401).json({error: Constants.ERROR.INVALID.TOKEN});
             } else {
-                Question.remove({_id: id, asker: user._id}, function (err, doc) {
+                Question.findOne({_id: id, asker: user._id}, function (err, doc) {
                     if (err) {
                         res.status(400).json({error: Constants.ERROR.QUESTION_BY_ID});
                     } else {
-                        res.status(204).send();
+                        async.each(doc.answers, function (answerId, done) {
+                            Answer.remove({_id:answerId}, done);
+                        }, function (err) {
+                            doc.remove();
+                            res.status(204).send();
+                        });
                     }
-                })
+                });
             }
         });
     };
