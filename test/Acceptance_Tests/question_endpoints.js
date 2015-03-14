@@ -7,7 +7,6 @@ var request = require('supertest');
 var should = require('should');
 var app = require('../../server');
 var jwt = require('jwt-simple');
-var User = require('../../models/user');
 var Question = require('../../models/question');
 var Answer = require('../../models/answer');
 var dbUtils = require('../../utils/databaseutils');

@@ -9,13 +9,7 @@ var Constants = require('../constants');
 var async = require('async');
 
 module.exports = function () {
-    return setupFunctions();
-};
-
-var setupFunctions = function () {
-    var exports = {};
-
-    exports.getQuestionSet = function (req, res) { //TODO test if you pass words instead of numbers in params
+    var getQuestionSet = function (req, res) { //TODO-sahil test if you pass words instead of numbers in params
         var questionsPerPage = req.query.questionsPerPage || 20;
         var pageNumber = req.query.pageNumber || 1;
         var sortOrder = req.query.sortOrder;
@@ -56,7 +50,7 @@ var setupFunctions = function () {
         });
     };
 
-    exports.getQuestionById = function (req, res) {
+    var getQuestionById = function (req, res) {
         var id = req.params.id;
         if (_.isEmpty(id)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.QUESTION_ID});
@@ -92,7 +86,7 @@ var setupFunctions = function () {
         });
     };
 
-    exports.deleteQuestionById = function (req, res) {
+    var deleteQuestionById = function (req, res) {
         var id = req.body.id;
         var token = req.body.token;
         if (_.isEmpty(id)) {
@@ -121,7 +115,7 @@ var setupFunctions = function () {
         });
     };
 
-    exports.postQuestion = function (req, res) {
+    var postQuestion = function (req, res) {
         var questionTitle = req.body.questionTitle;
         if (_.isEmpty(questionTitle)) {
             res.status(400).json({error: Constants.ERROR.MISSING.QUESTION_TITLE});
@@ -160,5 +154,9 @@ var setupFunctions = function () {
         });
     };
 
-    return exports;
+    return {
+        getQuestionSet: getQuestionSet,
+        getQuestionById: getQuestionById,
+        deleteQuestionById: deleteQuestionById,
+        postQuestion: postQuestion };
 };

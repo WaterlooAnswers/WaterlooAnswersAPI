@@ -5,7 +5,6 @@ var Question = require('../models/question');
 var Answer = require('../models/answer');
 var _ = require('lodash');
 var tokenUtils = require('../utils/tokenutils');
-var dbUtils = require('../utils/databaseutils');
 var Constants = require('../constants');
 
 var serverError = function (res) {
@@ -13,13 +12,7 @@ var serverError = function (res) {
 };
 
 module.exports = function (passport) {
-    return setupFunctions(passport);
-};
-
-var setupFunctions = function (passport) {
-    var exports = {};
-
-    exports.getUser = function (req, res) {
+    var getUser = function (req, res) {
         var token = req.query.token;
         if (_.isEmpty(token)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.TOKEN});
@@ -76,7 +69,7 @@ var setupFunctions = function (passport) {
         });
     };
 
-    exports.getUserById = function (req, res) {
+    var getUserById = function (req, res) {
         var token = req.query.token;
         if (textUtils.isEmpty(token)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.TOKEN});
@@ -123,7 +116,7 @@ var setupFunctions = function (passport) {
         });
     };
 
-    exports.getLoginToken = function (req, res, next) {
+    var getLoginToken = function (req, res, next) {
         if (_.isEmpty(req.query.email)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.EMAIL});
         }
@@ -142,7 +135,7 @@ var setupFunctions = function (passport) {
         })(req, res, next);
     };
 
-    exports.postSignup = function (req, res, next) {
+    var postSignup = function (req, res, next) {
         if (_.isEmpty(req.query.email)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.EMAIL});
         }
@@ -164,5 +157,10 @@ var setupFunctions = function (passport) {
         })(req, res, next);
     };
 
-    return exports;
+    return {
+        getUser: getUser,
+        getUserById: getUserById,
+        getLoginToken: getLoginToken,
+        postSignup: postSignup
+    };
 };

@@ -5,10 +5,8 @@
 process.env.NODE_ENV = 'test';
 
 var request = require('supertest');
-var should = require('should');
 var app = require('../../server');
 var jwt = require('jwt-simple');
-var User = require('../../models/user');
 var dbUtils = require('../../utils/databaseutils');
 var Constants = require('../../constants');
 
