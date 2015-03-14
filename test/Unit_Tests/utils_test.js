@@ -5,22 +5,22 @@
 process.env.NODE_ENV = 'test';
 
 var should = require('should');
-var textUtils = require('../../utils/textutils');
 var tokenUtils = require('../../utils/tokenutils');
 var jwt = require("jwt-simple");
 var User = require("../../models/user");
+var _ = require("lodash");
 
 
-describe('textutils', function () {
+describe('lodash', function () {
     describe('.isEmpty()', function () {
         it('should be true if empty string is passed', function () {
-            textUtils.isEmpty("").should.be.true;
+            _.isEmpty("").should.be.true;
         });
         it('should be true if null is passed', function () {
-            textUtils.isEmpty().should.be.true;
+            _.isEmpty(null).should.be.true;
         });
         it('should be false if a string is passed', function () {
-            textUtils.isEmpty("a").should.be.false;
+            _.isEmpty("a").should.be.false;
         });
     })
 });

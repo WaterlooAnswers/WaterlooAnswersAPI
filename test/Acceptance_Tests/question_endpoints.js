@@ -56,7 +56,7 @@ describe('Question Endpoints', function () {
                 done();
             });
         });
-        it("should post question when given valid info", function (done) {
+        it("should post question if given valid info", function (done) {
             var token = jwt.encode({userId: user._id}, "testsecret");
             token.should.not.be.empty;
             request(app).post('/api/questions').send({questionTitle: "title", questionDescription: "description", categoryIndex: 2, token: token}).expect(200).end(function (err, res) {

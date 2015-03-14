@@ -2,7 +2,7 @@
  * Created by Sahil Jain on 20/08/2014.
  */
 var Question = require('../models/question');
-var textUtils = require('../utils/textutils');
+var _ = require('lodash');
 var tokenUtils = require('../utils/tokenutils');
 var Constants = require('../constants');
 
@@ -17,12 +17,10 @@ var setupFunctions = function () {
         var questionsPerPage = req.query.questionsPerPage || 20;
         var pageNumber = req.query.pageNumber || 1;
         var sortOrder = req.query.sortOrder;
-        console.log(sortOrder);
         var categoryId = req.query.categoryId;
         var query = {};
         if (categoryId) {
             query.category = global.questionCategories[categoryId];
-            console.log(query);
         }
 
         var skip = questionsPerPage * (pageNumber - 1);
@@ -58,7 +56,7 @@ var setupFunctions = function () {
 
     exports.getQuestionById = function (req, res) {
         var id = req.params.id;
-        if (textUtils.isEmpty(id)) {
+        if (_.isEmpty(id)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.QUESTION_ID});
         }
         Question.findById(id).populate('answers').populate('asker').exec(function (err, item) {
@@ -95,10 +93,10 @@ var setupFunctions = function () {
     exports.deleteQuestionById = function (req, res) {
         var id = req.body.id;
         var token = req.body.token;
-        if (textUtils.isEmpty(id)) {
+        if (_.isEmpty(id)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.QUESTION_ID});
         }
-        if (textUtils.isEmpty(token)) {
+        if (_.isEmpty(token)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.TOKEN});
         }
         tokenUtils.getUserFromToken(token, function (err, user) {
@@ -118,25 +116,25 @@ var setupFunctions = function () {
 
     exports.postQuestion = function (req, res) {
         var questionTitle = req.body.questionTitle;
-        if (textUtils.isEmpty(questionTitle)) {
+        if (_.isEmpty(questionTitle)) {
             res.status(400).json({error: Constants.ERROR.MISSING.QUESTION_TITLE});
             return;
         }
 
         var text = req.body.questionDescription;
-        if (textUtils.isEmpty(text)) {
+        if (_.isEmpty(text)) {
             res.status(400).json({error: Constants.ERROR.MISSING.QUESTION_DESCRIPTION});
             return;
         }
 
         var category = global.questionCategories[req.body.categoryIndex];
-        if (textUtils.isEmpty(category)) {
+        if (_.isEmpty(category)) {
             res.status(400).json({error: Constants.ERROR.MISSING.QUESTION_CATEGORY});
             return;
         }
 
         var token = req.body.token;
-        if (textUtils.isEmpty(token)) {
+        if (_.isEmpty(token)) {
             res.status(400).json({error: Constants.ERROR.MISSING.TOKEN});
             return;
         }

@@ -9,9 +9,7 @@
     "expressjs"
   ],
   "author": {
-    "name": "Sahil Jain",
-    "email": "sahil@sahiljain.ca",
-    "url": "http://www.sahiljain.ca"
+    "name": "Waterloo Answers Team"
   },
   "homepage": "http://ask.sahiljain.ca/",
   "repository": {
@@ -33,7 +31,7 @@
     "express": "latest",
     "express-session": "latest",
     "jwt-simple": "latest",
-    "mocha-lcov-reporter": "0.0.2",
+    "lodash": "3.5.0",
     "mongodb": "latest",
     "mongoose": "latest",
     "morgan": "latest",
@@ -46,7 +44,7 @@
   "devDependencies": {
     "mocha": "latest",
     "istanbul": "^0.3.6",
-    "mocha-lcov-reporter": "0.0.1"
+    "mocha-lcov-reporter": "0.0.2"
   },
   "bundleDependencies": [],
   "scripts": {

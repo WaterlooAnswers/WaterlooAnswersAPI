@@ -3,12 +3,11 @@
  */
 var Question = require('../models/question');
 var Answer = require('../models/answer');
-var textUtils = require('../utils/textutils');
+var _ = require('lodash');
 var tokenUtils = require('../utils/tokenutils');
 var Constants = require('../constants');
 
 var serverError = function (res) {
-    console.log("sending error");
     return res.status(500).json({error: "server error"});
 };
 
@@ -21,7 +20,7 @@ var setupFunctions = function (passport) {
 
     exports.getUser = function (req, res) { //TODO format the output of questions/answers correctly
         var token = req.query.token;
-        if (textUtils.isEmpty(token)) {
+        if (_.isEmpty(token)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.TOKEN});
         }
 
@@ -52,7 +51,6 @@ var setupFunctions = function (passport) {
                                         if (err) {
                                             return serverError(res);
                                         } else if (!questionAnswered) {
-                                            console.log("deleted answer " + answer._id);
                                             answer.remove();
                                             numDeleted++;
                                         } else {
@@ -78,10 +76,10 @@ var setupFunctions = function (passport) {
     };
 
     exports.getLoginToken = function (req, res, next) {
-        if (textUtils.isEmpty(req.query.email)) {
+        if (_.isEmpty(req.query.email)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.EMAIL});
         }
-        if (textUtils.isEmpty(req.query.password)) {
+        if (_.isEmpty(req.query.password)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.PASSWORD});
         }
         passport.authenticate('local-login', {session: false}, function (err, user, info) {
@@ -97,13 +95,13 @@ var setupFunctions = function (passport) {
     };
 
     exports.postSignup = function (req, res, next) {
-        if (textUtils.isEmpty(req.query.email)) {
+        if (_.isEmpty(req.query.email)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.EMAIL});
         }
-        if (textUtils.isEmpty(req.query.password)) {
+        if (_.isEmpty(req.query.password)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.PASSWORD});
         }
-        if (textUtils.isEmpty(req.query.firstName)) {
+        if (_.isEmpty(req.query.firstName)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.FIRST_NAME});
         }
         passport.authenticate('local-signup', {session: false}, function (err, user, info) {
