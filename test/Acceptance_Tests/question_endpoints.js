@@ -131,9 +131,9 @@ describe('Question Endpoints', function () {
                             if (err) {
                                 res.status(500).json({error: Constants.ERROR.SAVE.ANSWER});
                             } else {
-                                Question.findByIdAndUpdate(question._id, {$push: {answers: answerSaved._id}, $inc: {numAnswers: 1}}, function (err, questionReturned) {
-                                    done();
-                                });
+                                question.answers.push(answerSaved._id);
+                                question.save();
+                                done();
                             }
                         });
                     });

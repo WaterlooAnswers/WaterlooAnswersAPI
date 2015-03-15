@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var Question = require('./question');
+var User = require('./user');
 
 var answerSchema = mongoose.Schema({
     answerer: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},

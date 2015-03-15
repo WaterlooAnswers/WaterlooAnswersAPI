@@ -1,5 +1,3 @@
-// app/models/user.js
-// load the things we need
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 
@@ -22,6 +20,10 @@ userSchema.methods.generateHash = function (password) {
 // checking if password is valid
 userSchema.methods.validPassword = function (password) {
     return bcrypt.compareSync(password, this.password);
+};
+
+userSchema.statics.format = function (user) {
+    return user;
 };
 
 // create the model for users and expose it to our app

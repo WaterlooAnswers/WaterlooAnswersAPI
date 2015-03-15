@@ -3,14 +3,6 @@ var Question = require('../models/question');
 var Answer = require('../models/answer');
 var mongoose = require('mongoose');
 
-exports.formatPublicUser = function (user) {
-    var out = {};
-};
-
-exports.formatTokenUser = function (user) {
-    
-};
-
 exports.createTestUser = function (email, password, firstName, done) {
     var newUser = new User();
     newUser.email = email;

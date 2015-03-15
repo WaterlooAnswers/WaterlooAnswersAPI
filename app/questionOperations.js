@@ -32,20 +32,7 @@ module.exports = function () {
         }
 
         Question.find(query).sort(sortObject).skip(skip).limit(questionsPerPage).populate('asker', 'firstName _id').exec(function (err, questions) {
-            var output = [];
-            questions.forEach(function (item) {
-                var currentOutput = {};
-                currentOutput.questionId = item._id;
-                currentOutput.name = item.name;
-                currentOutput.description = item.text;
-                currentOutput.askerName = item.asker.firstName;
-                currentOutput.askerId = item.asker._id;
-                currentOutput.category = item.category;
-                currentOutput.numAnswers = item.answers.length;
-                currentOutput.numVotes = item.votes;
-                currentOutput.timeAsked = item.time;
-                output.push(currentOutput);
-            });
+            var output = Question.formatQuestionsList(questions);
             res.json(output);
         });
     };

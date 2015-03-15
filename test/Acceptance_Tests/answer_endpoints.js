@@ -62,7 +62,8 @@ describe('Answer Endpoints', function () {
             token.should.not.be.empty;
             request(app).post('/api/answers').send({questionId: question._id, answerBody: "description", token: token}).expect(200).end(function (err, res) {
                 console.log(res.body);
-                res.body.result.should.equal(Constants.SUCCESS.SAVE.ANSWER);
+                res.body.question.should.exist;
+                res.body.question.answers.should.not.be.empty;
                 Answer.find({}, function (err, docs) {
                     should.not.exist(err);
                     docs.length.should.equal(1);
