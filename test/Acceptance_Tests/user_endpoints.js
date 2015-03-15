@@ -9,7 +9,8 @@ var should = require('should');
 var app = require('../../server');
 var jwt = require('jwt-simple');
 var User = require('../../models/user');
-var dbUtils = require('../test_db_utils');
+var dbUtils = require('../../utils/databaseutils');
+var Constants = require('../../constants');
 
 describe('User Endpoints', function () {
 
@@ -17,25 +18,25 @@ describe('User Endpoints', function () {
         before(function (done) {
             dbUtils.clearUserCollection(done);
         });
-        it('should return error when no username provided', function (done) {
+        it('should return error if no email provided', function (done) {
             request(app).post('/api/signup').expect(400).end(function (err, res) {
-                res.body.error.should.equal("Could not create user. Please provide username");
+                res.body.error.should.equal(Constants.ERROR.MISSING.EMAIL);
                 done();
             });
         });
-        it('should return error when no password provided', function (done) {
+        it('should return error if no password provided', function (done) {
             request(app).post('/api/signup?email=hello').expect(400).end(function (err, res) {
-                res.body.error.should.equal("Could not create user. Please provide password");
+                res.body.error.should.equal(Constants.ERROR.MISSING.PASSWORD);
                 done();
             });
         });
-        it('should return error when no firstName provided', function (done) {
+        it('should return error if no firstName provided', function (done) {
             request(app).post('/api/signup?email=hello&password=hello').expect(400).end(function (err, res) {
-                res.body.error.should.equal("Could not create user. Please provide firstName");
+                res.body.error.should.equal(Constants.ERROR.MISSING.FIRST_NAME);
                 done();
             });
         });
-        it('should create user when credentials provided', function (done) {
+        it('should create user if credentials provided', function (done) {
             request(app).post('/api/signup?email=hello&password=hello&firstName=hello').expect(200).end(function (err, res) {
                 res.body.username.should.equal("hello");
                 res.body.firstName.should.equal("hello");
@@ -45,9 +46,9 @@ describe('User Endpoints', function () {
                 done();
             });
         });
-        it('should not create user when email already in use', function (done) {
+        it('should not create user if email already in use', function (done) {
             request(app).post('/api/signup?email=hello&password=hello&firstName=hello').expect(401).end(function (err, res) {
-                res.body.error.should.equal("email already in use");
+                res.body.error.should.equal(Constants.ERROR.EMAIL_IN_USE);
                 done();
             });
         });
@@ -69,13 +70,13 @@ describe('User Endpoints', function () {
         });
         it("should not log in with missing credentials", function (done) {
             request(app).post('/api/login?email=hello').expect(400).end(function (err, res) {
-                res.body.error.should.equal("please provide an email and password");
+                res.body.error.should.equal(Constants.ERROR.MISSING.PASSWORD);
                 done();
             });
         });
         it("should not log in with invalid credentials", function (done) {
             request(app).post('/api/login?email=hello&password=hello').expect(401).end(function (err, res) {
-                res.body.error.should.equal("invalid username or password");
+                res.body.error.should.equal(Constants.ERROR.INVALID.EMAIL_OR_PASSWORD);
                 done();
             });
         });
@@ -87,9 +88,5 @@ describe('User Endpoints', function () {
                 done();
             });
         });
-    });
-
-    describe('GET /profile', function () {
-        it("should return correct data about user");
     });
 });

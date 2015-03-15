@@ -17,7 +17,7 @@ exports.createTestUser = function (email, password, firstName, done) {
     });
 };
 
-exports.createTestQuestion = function (questionTitle, text, askerId, categoryIndex, done) {
+exports.createQuestion = function (questionTitle, text, askerId, categoryIndex, done) {
     var q1 = new Question({name: questionTitle, text: text, asker: askerId, category: global.questionCategories[categoryIndex]});
     q1.save(function (err, question) {
         if (err) {

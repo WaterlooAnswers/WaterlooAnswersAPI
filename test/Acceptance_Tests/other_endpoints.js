@@ -7,6 +7,7 @@ process.env.NODE_ENV = 'test';
 var request = require('supertest');
 var should = require('should');
 var app = require('../../server');
+var Constants = require('../../constants');
 
 describe('Other Endpoints', function () {
     describe('GET /categories', function () {
@@ -24,7 +25,7 @@ describe('Other Endpoints', function () {
     describe('GET /api', function () {
         it('should redirect to docs', function (done) {
             request(app).get('/api').expect(200).end(function (err, res) {
-                res.headers.location.should.equal("http://docs.waterlooanswers.apiary.io/");
+                res.headers.location.should.equal(Constants.URLS.API_DOC);
                 done();
             });
         });
@@ -32,7 +33,8 @@ describe('Other Endpoints', function () {
     describe('GET /blahblahblah', function () {
         it('should give error json', function (done) {
             request(app).get('/api/blahblahblah').expect(404).end(function (err, res) {
-                res.body.error.should.equal("Invalid HTTP method or path, please refer to the API Documentation.");
+                console.log(res.body);
+                res.body.error.should.equal(Constants.ERROR.INVALID.HTTP_METHOD);
                 done();
             });
         });

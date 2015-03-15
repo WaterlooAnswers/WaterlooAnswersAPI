@@ -1,6 +1,7 @@
 var LocalStrategy = require('passport-local').Strategy;
 
 var User = require('../models/user');
+var Constants = require('../constants');
 
 // expose this function to our app using module.exports
 module.exports = function (passport) {
@@ -53,7 +54,7 @@ module.exports = function (passport) {
                     // check to see if theres already a user with that email
                     if (user) {
                         console.log("user already exists");
-                        return done("email already in use", false);
+                        return done(Constants.ERROR.EMAIL_IN_USE, false);
                     } else if (!req.query.firstName || req.query.firstName === "") {
                         console.log("no first name");
                         return done(null, false);
