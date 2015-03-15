@@ -4,11 +4,11 @@ var mongoose = require('mongoose');
 
 exports.formatPublicUser = function (user) {
     var out = {};
-}
+};
 
 exports.formatTokenUser = function (user) {
     
-}
+};
 
 exports.createTestUser = function (email, password, firstName, done) {
     var newUser = new User();
