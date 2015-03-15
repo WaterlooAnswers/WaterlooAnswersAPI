@@ -1,5 +1,6 @@
 var User = require('../models/user');
 var Question = require('../models/question');
+var Answer = require('../models/answer');
 var mongoose = require('mongoose');
 
 exports.formatPublicUser = function (user) {
@@ -29,9 +30,24 @@ exports.createQuestion = function (questionTitle, text, askerId, categoryIndex, 
     var q1 = new Question({name: questionTitle, text: text, asker: askerId, category: global.questionCategories[categoryIndex]});
     q1.save(function (err, question) {
         if (err) {
+            console.log(err);
             throw err;
         } else {
             done(question);
+        }
+    });
+};
+
+exports.createAnswer = function (question, answerer, text, done) {
+    var ans = new Answer({answerer: answerer._id, text: text});
+    ans.save(function (err, answer) {
+        if (err) {
+            console.log(err);
+            throw err;
+        } else {
+            question.answers.push(answer._id);
+            question.save();
+            done(answer);
         }
     });
 };
@@ -44,6 +60,12 @@ exports.clearUserCollection = function (done) {
 
 exports.clearQuestionCollection = function (done) {
     mongoose.connection.collections.questions.remove(function () {
+        return done();
+    });
+};
+
+exports.clearAnswerCollection = function (done) {
+    mongoose.connection.collections.answers.remove(function () {
         return done();
     });
 };
