@@ -42,7 +42,6 @@ var SampleApp = function () {
 
     self.initializeServer = function () {
         self.app = express();
-        self.app.use(bodyParser.urlencoded({extended: true}));
         self.app.use(bodyParser.json());
         self.app.use(morgan('combined'));
         var MongoStore = require('connect-mongo')(session);

@@ -3,29 +3,25 @@
  */
 var Question = require('../models/question');
 var Answer = require('../models/answer');
+var User = require('../models/user');
 var _ = require('lodash');
 var tokenUtils = require('../utils/tokenutils');
 var Constants = require('../constants');
+var async = require('async');
 
 var serverError = function (res) {
     return res.status(500).json({error: "server error"});
 };
 
 module.exports = function (passport) {
-    return setupFunctions(passport);
-};
-
-var setupFunctions = function (passport) {
-    var exports = {};
-
-    exports.getUser = function (req, res) { //TODO format the output of questions/answers correctly
+    var getUser = function (req, res) {
         var token = req.query.token;
         if (_.isEmpty(token)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.TOKEN});
         }
 
         tokenUtils.getUserFromToken(token, function (err, user) {
-            if (!user) return res.status(401).json({error: Constants.ERROR.INVALID.TOKEN});
+            if (err || !user) return res.status(401).json({error: Constants.ERROR.INVALID.TOKEN});
             var out = {};
             out.userId = user._id;
             out.firstName = user.firstName;
@@ -35,37 +31,27 @@ var setupFunctions = function (passport) {
                 if (err) {
                     return serverError(res);
                 } else {
-                    out.questionsAsked = questionsAsked; //todo format question docs for output
+                    out.questionsAsked = Question.formatQuestionsList(questionsAsked);
                     Answer.find({'answerer': user._id}, function (err, answersGiven) {
                         if (err) {
                             return serverError(res);
                         } else {
                             out.answersGiven = [];
-                            var numDeleted = 0;
                             if (answersGiven.length == 0) {
                                 return res.json(out);
                             } else {
-                                answersGiven.forEach(function (answer) {
-                                    var curAns = {};
-                                    Question.findOne({answers: answer._id}, function (err, questionAnswered) {
-                                        if (err) {
+                                async.forEach(answersGiven, function (answer, done) {
+                                    Answer.format(answer, function (err, answerFormatted) {
+                                        if (err || !answerFormatted) {
                                             return serverError(res);
-                                        } else if (!questionAnswered) {
-                                            answer.remove();
-                                            numDeleted++;
                                         } else {
-                                            curAns.questionId = questionAnswered._id;
-                                            curAns.questionName = questionAnswered.name;
-                                            curAns.questionDescription = questionAnswered.text;
-                                            curAns.answerId = answer._id;
-                                            curAns.answerText = answer.text;
-                                            curAns.answerTime = answer.time;
-                                            out.answersGiven.push(curAns); //TODO more information?
-                                        }
-                                        if ((out.answersGiven.length + numDeleted) == answersGiven.length) {
-                                            return res.json(out);
+                                            out.answersGiven.push(answerFormatted);
+                                            done();
                                         }
                                     });
+                                }, function(err) {
+                                    if (err) return serverError(res);
+                                    return res.json(out);
                                 });
                             }
                         }
@@ -75,7 +61,56 @@ var setupFunctions = function (passport) {
         });
     };
 
-    exports.getLoginToken = function (req, res, next) {
+    var getUserById = function (req, res) {
+        var token = req.query.token;
+        if (_.isEmpty(token)) {
+            return res.status(400).json({error: Constants.ERROR.MISSING.TOKEN});
+        }
+        tokenUtils.getUserFromToken(token, function (err, tokenuser) { //only users with an access token can get profiles of other users (for safety reasons)
+            if (!tokenuser) return res.status(401).json({error: Constants.ERROR.INVALID.TOKEN});
+            User.findById(req.params.id, function (err, user) {
+                if (err) return serverError(res);
+                var out = {};
+                out.userId = user._id;
+                out.firstName = user.firstName;
+                out.email = user.email;
+                out.dateJoined = user.dateCreated;
+                Question.find({'asker': user._id}, function (err, questionsAsked) {
+                    if (err) {
+                        return serverError(res);
+                    } else {
+                        out.questionsAsked = Question.formatQuestionsList(questionsAsked);
+                        Answer.find({'answerer': user._id}, function (err, answersGiven) {
+                            if (err) {
+                                return serverError(res);
+                            } else {
+                                out.answersGiven = [];
+                                if (answersGiven.length == 0) {
+                                    return res.json(out);
+                                } else {
+                                    async.forEach(answersGiven, function (answer, done) {
+                                        Answer.format(answer, function (err, answerFormatted) {
+                                            if (err || !answerFormatted) {
+                                                return serverError(res);
+                                            } else {
+                                                out.answersGiven.push(answerFormatted);
+                                                done();
+                                            }
+                                        });
+                                    }, function(err) {
+                                        if (err) return serverError(res);
+                                        return res.json(out);
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    };
+
+    var getLoginToken = function (req, res, next) {
         if (_.isEmpty(req.query.email)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.EMAIL});
         }
@@ -94,7 +129,7 @@ var setupFunctions = function (passport) {
         })(req, res, next);
     };
 
-    exports.postSignup = function (req, res, next) {
+    var postSignup = function (req, res, next) {
         if (_.isEmpty(req.query.email)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.EMAIL});
         }
@@ -116,5 +151,10 @@ var setupFunctions = function (passport) {
         })(req, res, next);
     };
 
-    return exports;
+    return {
+        getUser: getUser,
+        getUserById: getUserById,
+        getLoginToken: getLoginToken,
+        postSignup: postSignup
+    };
 };

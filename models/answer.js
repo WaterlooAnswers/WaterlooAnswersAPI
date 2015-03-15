@@ -1,18 +1,34 @@
 var mongoose = require('mongoose');
+var Question = require('./question');
+var User = require('./user');
 
 var answerSchema = mongoose.Schema({
     answerer: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    answererName: String,
     upvoters: [
         {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
     ],
-    numUpvotes: Number,
     downvoters: [
         {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
     ],
-    numDownvotes: Number,
     text: String,
     time: { type: Date, default: Date.now }
 });
+
+answerSchema.statics.format = function(answer, done) {
+    var out = {};
+    Question.findOne({answers: answer._id}, function (err, questionAnswered) {
+        if (err || !questionAnswered) {
+            return done(err, null);
+        } else {
+            out.questionId = questionAnswered._id;
+            out.questionTitle = questionAnswered.name;
+            out.questionDescription = questionAnswered.text;
+            out.answerId = answer._id;
+            out.answerText = answer.text;
+            out.answerTime = answer.time;
+            return done(null, out);
+        }
+    });
+};
 
 module.exports = mongoose.model('Answer', answerSchema);

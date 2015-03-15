@@ -21,6 +21,7 @@
     "npm": ">= 1.0.0"
   },
   "dependencies": {
+    "async": "latest",
     "bcrypt-nodejs": "latest",
     "body-parser": "latest",
     "connect-flash": "latest",

@@ -7,8 +7,8 @@ var request = require('supertest');
 var should = require('should');
 var app = require('../../server');
 var jwt = require('jwt-simple');
-var User = require('../../models/user');
 var Question = require('../../models/question');
+var Answer = require('../../models/answer');
 var dbUtils = require('../../utils/databaseutils');
 var Constants = require('../../constants');
 
@@ -16,10 +16,12 @@ describe('Question Endpoints', function () {
     describe("POST /questions", function () {
         var user;
         before(function (done) {
-            dbUtils.createTestUser("email", "password", "firstName", function (newUser) {
-                user = newUser;
-                done();
-            });
+            Question.remove({}, function() {
+                dbUtils.createTestUser("email", "password", "firstName", function (newUser) {
+                    user = newUser;
+                    done();
+                });
+            })
         });
         after(function (done) {
             dbUtils.clearUserCollection(function () {
@@ -117,18 +119,32 @@ describe('Question Endpoints', function () {
     describe("DELETE /questions", function () {
         var question;
         var user;
+        var answer;
         before(function (done) {
-            dbUtils.createTestUser("email", "password", "firstName", function (newUser) {
-                user = newUser;
-                dbUtils.createQuestion("title", "description", user._id, 1, function (doc) {
-                    question = doc;
-                    done();
+            Answer.remove({}, function() {
+              dbUtils.createTestUser("email", "password", "firstName", function (newUser) {
+                    user = newUser;
+                    dbUtils.createQuestion("title", "description", user._id, 1, function (doc) {
+                        question = doc;
+                        var ans = new Answer({answerer: user._id, text: "some answer"});
+                        ans.save(function (err, answerSaved) {
+                            if (err) {
+                                res.status(500).json({error: Constants.ERROR.SAVE.ANSWER});
+                            } else {
+                                question.answers.push(answerSaved._id);
+                                question.save();
+                                done();
+                            }
+                        });
+                    });
                 });
             });
         });
         after(function (done) {
             dbUtils.clearUserCollection(function () {
-                dbUtils.clearQuestionCollection(done);
+                dbUtils.clearQuestionCollection(function() {
+                    Answer.remove({}, done);
+                });
             });
         });
         it("should not delete if missing token", function (done) {
@@ -162,11 +178,23 @@ describe('Question Endpoints', function () {
             });
         });
         it("should delete if valid id and token", function (done) {
-            request(app).delete('/api/questions').send({id: question._id, token: jwt.encode({userId: user._id}, "testsecret")}).expect(204).end(function (err, res) {
-                Question.find({}, function (err, docs) {
+            Question.find({}, function (err, docs) {
+                should.not.exist(err);
+                docs.length.should.equal(1);
+                Answer.find({}, function (err, answers) {
                     should.not.exist(err);
-                    docs.length.should.equal(0);
-                    done();
+                    answers.length.should.equal(1);
+                    request(app).delete('/api/questions').send({id: question._id, token: jwt.encode({userId: user._id}, "testsecret")}).expect(204).end(function (err, res) {
+                        Question.find({}, function (err, docs) {
+                            should.not.exist(err);
+                            docs.length.should.equal(0);
+                            Answer.find({}, function (err, answers) {
+                                should.not.exist(err);
+                                answers.length.should.equal(0);
+                                done();
+                            });
+                        });
+                    });
                 });
             });
         });

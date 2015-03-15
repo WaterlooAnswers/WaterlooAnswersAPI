@@ -3,17 +3,13 @@
  */
 var Question = require('../models/question');
 var _ = require('lodash');
+var Answer = require('../models/answer');
 var tokenUtils = require('../utils/tokenutils');
 var Constants = require('../constants');
+var async = require('async');
 
 module.exports = function () {
-    return setupFunctions();
-};
-
-var setupFunctions = function () {
-    var exports = {};
-
-    exports.getQuestionSet = function (req, res) { //TODO test if you pass words instead of numbers in params
+    var getQuestionSet = function (req, res) { //TODO-sahil test if you pass words instead of numbers in params
         var questionsPerPage = req.query.questionsPerPage || 20;
         var pageNumber = req.query.pageNumber || 1;
         var sortOrder = req.query.sortOrder;
@@ -36,25 +32,12 @@ var setupFunctions = function () {
         }
 
         Question.find(query).sort(sortObject).skip(skip).limit(questionsPerPage).populate('asker', 'firstName _id').exec(function (err, questions) {
-            var output = [];
-            questions.forEach(function (item) {
-                var currentOutput = {};
-                currentOutput.questionId = item._id;
-                currentOutput.name = item.name;
-                currentOutput.description = item.text;
-                currentOutput.askerName = item.asker.firstName;
-                currentOutput.askerId = item.asker._id;
-                currentOutput.category = item.category;
-                currentOutput.numAnswers = item.answers.length;
-                currentOutput.numVotes = item.votes;
-                currentOutput.timeAsked = item.time;
-                output.push(currentOutput);
-            });
+            var output = Question.formatQuestionsList(questions);
             res.json(output);
         });
     };
 
-    exports.getQuestionById = function (req, res) {
+    var getQuestionById = function (req, res) {
         var id = req.params.id;
         if (_.isEmpty(id)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.QUESTION_ID});
@@ -90,7 +73,7 @@ var setupFunctions = function () {
         });
     };
 
-    exports.deleteQuestionById = function (req, res) {
+    var deleteQuestionById = function (req, res) {
         var id = req.body.id;
         var token = req.body.token;
         if (_.isEmpty(id)) {
@@ -103,18 +86,23 @@ var setupFunctions = function () {
             if (!user) {
                 return res.status(401).json({error: Constants.ERROR.INVALID.TOKEN});
             } else {
-                Question.remove({_id: id, asker: user._id}, function (err, doc) {
+                Question.findOne({_id: id, asker: user._id}, function (err, doc) {
                     if (err) {
                         res.status(400).json({error: Constants.ERROR.QUESTION_BY_ID});
                     } else {
-                        res.status(204).send();
+                        async.each(doc.answers, function (answerId, done) {
+                            Answer.remove({_id:answerId}, done);
+                        }, function (err) {
+                            doc.remove();
+                            res.status(204).send();
+                        });
                     }
-                })
+                });
             }
         });
     };
 
-    exports.postQuestion = function (req, res) {
+    var postQuestion = function (req, res) {
         var questionTitle = req.body.questionTitle;
         if (_.isEmpty(questionTitle)) {
             res.status(400).json({error: Constants.ERROR.MISSING.QUESTION_TITLE});
@@ -153,5 +141,9 @@ var setupFunctions = function () {
         });
     };
 
-    return exports;
+    return {
+        getQuestionSet: getQuestionSet,
+        getQuestionById: getQuestionById,
+        deleteQuestionById: deleteQuestionById,
+        postQuestion: postQuestion };
 };
