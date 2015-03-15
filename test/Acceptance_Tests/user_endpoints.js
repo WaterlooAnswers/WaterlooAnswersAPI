@@ -141,6 +141,8 @@ describe('User Endpoints', function () {
                 res.body.userId.should.equal(user._id.toString());
                 res.body.questionsAsked.length.should.equal(1);
                 res.body.questionsAsked[0].numAnswers.should.equal(1);
+                res.body.answersGiven.length.should.equal(1);
+
                 var questionAsked = res.body.questionsAsked[0];
                 questionAsked.questionId.should.equal(question._id.toString());
                 questionAsked.askerId.should.equal(user._id.toString());
@@ -148,7 +150,7 @@ describe('User Endpoints', function () {
                 questionAsked.numAnswers.should.equal(1);
                 questionAsked.questionTitle.should.equal('testquestiontitle');
                 questionAsked.questionDescription.should.equal('testquestiontext');
-                res.body.answersGiven.length.should.equal(1);
+
                 var answerGiven = res.body.answersGiven[0];
                 answerGiven.answerId.should.equal(answer._id.toString());
                 answerGiven.answerText.should.equal(answer.text.toString());
