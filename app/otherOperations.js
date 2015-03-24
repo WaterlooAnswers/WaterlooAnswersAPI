@@ -6,5 +6,5 @@ module.exports = function () {
         }
         res.json(output);
     };
-    return { getCategories: getCategories };
+    return {getCategories: getCategories};
 };

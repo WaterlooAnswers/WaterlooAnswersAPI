@@ -49,7 +49,7 @@ module.exports = function (passport) {
                                             done();
                                         }
                                     });
-                                }, function(err) {
+                                }, function (err) {
                                     if (err) return serverError(res);
                                     return res.json(out);
                                 });
@@ -97,7 +97,7 @@ module.exports = function (passport) {
                                                 done();
                                             }
                                         });
-                                    }, function(err) {
+                                    }, function (err) {
                                         if (err) return serverError(res);
                                         return res.json(out);
                                     });

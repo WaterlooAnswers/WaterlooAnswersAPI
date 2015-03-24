@@ -27,7 +27,7 @@ describe('lodash', function () {
 
 describe('tokenutils', function () {
     describe('generateTokenFromUser', function () {
-        it('should encode user id in token', function() {
+        it('should encode user id in token', function () {
             var user = new User({firstName: "John", email: "john@uwaterloo.ca", password: "password"});
             var token = tokenUtils.generateTokenFromUser(user);
             var claims = jwt.decode(token, "testsecret");

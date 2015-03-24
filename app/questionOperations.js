@@ -31,10 +31,15 @@ module.exports = function () {
             sortObject.time = -1;
         }
 
-        Question.find(query).sort(sortObject).skip(skip).limit(questionsPerPage).populate('asker', 'firstName _id').exec(function (err, questions) {
-            var output = Question.formatQuestionsList(questions);
-            res.json(output);
-        });
+        Question.find(query)
+            .sort(sortObject)
+            .skip(skip)
+            .limit(questionsPerPage)
+            .populate('asker', 'firstName _id')
+            .exec(function (err, questions) {
+                var output = Question.formatQuestionsList(questions);
+                res.json(output);
+            });
     };
 
     var getQuestionById = function (req, res) {
@@ -42,35 +47,36 @@ module.exports = function () {
         if (_.isEmpty(id)) {
             return res.status(400).json({error: Constants.ERROR.MISSING.QUESTION_ID});
         }
-        Question.findById(id).populate('answers').populate('asker').exec(function (err, item) {
-            if (err) {
-                return res.status(400).json({error: Constants.ERROR.QUESTION_BY_ID});
-            } else {
-                var currentOutput = {};
-                currentOutput.questionId = item._id;
-                currentOutput.name = item.name;
-                currentOutput.description = item.text;
-                currentOutput.askerName = item.asker.firstName;
-                currentOutput.askerId = item.asker._id;
-                currentOutput.askerEmail = item.asker.email;
-                currentOutput.category = item.category;
-                currentOutput.numAnswers = item.answers.length;
-                currentOutput.answers = [];
-                item.answers.forEach(function (answer) {
-                    var currentAnswer = {};
-                    currentAnswer.answererId = answer.answerer._id;
-                    currentAnswer.answererName = answer.answererName;
-                    currentAnswer.text = answer.text;
-                    currentAnswer.answerId = answer._id;
-                    currentAnswer.timeAnswered = answer.time;
-                    currentOutput.answers.push(currentAnswer);
-                });
-                currentOutput.favourites = item.favourites;
-                currentOutput.numVotes = item.votes;
-                currentOutput.timeAsked = item.time;
-                res.json(currentOutput);
-            }
-        });
+        Question.findById(id)
+            .populate('answers').populate('asker').exec(function (err, item) {
+                if (err) {
+                    return res.status(400).json({error: Constants.ERROR.QUESTION_BY_ID});
+                } else {
+                    var currentOutput = {};
+                    currentOutput.questionId = item._id;
+                    currentOutput.name = item.name;
+                    currentOutput.description = item.text;
+                    currentOutput.askerName = item.asker.firstName;
+                    currentOutput.askerId = item.asker._id;
+                    currentOutput.askerEmail = item.asker.email;
+                    currentOutput.category = item.category;
+                    currentOutput.numAnswers = item.answers.length;
+                    currentOutput.answers = [];
+                    item.answers.forEach(function (answer) {
+                        var currentAnswer = {};
+                        currentAnswer.answererId = answer.answerer._id;
+                        currentAnswer.answererName = answer.answererName;
+                        currentAnswer.text = answer.text;
+                        currentAnswer.answerId = answer._id;
+                        currentAnswer.timeAnswered = answer.time;
+                        currentOutput.answers.push(currentAnswer);
+                    });
+                    currentOutput.favourites = item.favourites;
+                    currentOutput.numVotes = item.votes;
+                    currentOutput.timeAsked = item.time;
+                    res.json(currentOutput);
+                }
+            });
     };
 
     var deleteQuestionById = function (req, res) {
@@ -91,7 +97,7 @@ module.exports = function () {
                         res.status(400).json({error: Constants.ERROR.QUESTION_BY_ID});
                     } else {
                         async.each(doc.answers, function (answerId, done) {
-                            Answer.remove({_id:answerId}, done);
+                            Answer.remove({_id: answerId}, done);
                         }, function (err) {
                             doc.remove();
                             res.status(204).send();
@@ -145,5 +151,6 @@ module.exports = function () {
         getQuestionSet: getQuestionSet,
         getQuestionById: getQuestionById,
         deleteQuestionById: deleteQuestionById,
-        postQuestion: postQuestion };
+        postQuestion: postQuestion
+    };
 };

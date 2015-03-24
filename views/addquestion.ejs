@@ -6,55 +6,52 @@
 </head>
 <body>
 
-  <% include navbar-loggedin %>
-  
+<% include navbar-loggedin %>
+
 <div class="container">
 
 
-
-<div class="col-sm-8 col-sm-offset-2">
-<div class="page-header"><h1>Add a Question</h1></div>
-	<form action="/ask" method="post">
-		<div class="form-group category">
-			<label>Choose Category</label>
-			<select class="form-control" name="category">  
-				<% cats.forEach(function(entry){ %>
+	<div class="col-sm-8 col-sm-offset-2">
+		<div class="page-header"><h1>Add a Question</h1></div>
+		<form action="/ask" method="post">
+			<div class="form-group category">
+				<label>Choose Category</label>
+				<select class="form-control" name="category">
+					<% cats.forEach(function(entry){ %>
 					<option> <%= entry %> </option>
-				<%	});%>
-			</select>
-		</div>
-		<div class="form-group question" style="display: none">
-			<label>Question</label>
-			<input type="text" class="form-control" name="question" maxlength="120"></input>
-		</div>
-		<div class="form-group description" style="display: none">
-			<label>Additional Details</label>
-			<textarea rows="3" class="form-control" name="text" style="resize:vertical;min-height:2em" maxlength="400"></textarea>
-		</div>
+					<% }); %>
+				</select>
+			</div>
+			<div class="form-group question" style="display: none">
+				<label>Question</label>
+				<input type="text" class="form-control" name="question" maxlength="120"></input>
+			</div>
+			<div class="form-group description" style="display: none">
+				<label>Additional Details</label>
+				<textarea rows="3" class="form-control" name="text" style="resize:vertical;min-height:2em"
+				          maxlength="400"></textarea>
+			</div>
 
-		<button type="submit" class="btn btn-warning btn-lg submit" style="display: none">Submit</button>
-	</form>
+			<button type="submit" class="btn btn-warning btn-lg submit" style="display: none">Submit</button>
+		</form>
+	</div>
+
 </div>
-
-</div>
-
-
-
 
 
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <script>
-	$(document).ready(function(){
+	$(document).ready(function () {
 		$("select").prop("selectedIndex", -1);
-		$("select").change(function(){
-			$(".question").show("fast", function(){
-				$(".description").show("fast", function(){
+		$("select").change(function () {
+			$(".question").show("fast", function () {
+				$(".description").show("fast", function () {
 					$(".submit").show("fast");
 				});
 			});
-		});	
-			
+		});
+
 	});
 
 </script>

@@ -11,10 +11,10 @@ var answerSchema = mongoose.Schema({
         {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
     ],
     text: String,
-    time: { type: Date, default: Date.now }
+    time: {type: Date, default: Date.now}
 });
 
-answerSchema.statics.format = function(answer, done) {
+answerSchema.statics.format = function (answer, done) {
     var out = {};
     Question.findOne({answers: answer._id}, function (err, questionAnswered) {
         if (err || !questionAnswered) {

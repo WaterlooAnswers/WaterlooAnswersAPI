@@ -1,52 +1,49 @@
-
-
-
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Questions</title>
-  <link href="/stylesheets/bootstrap.css" rel="stylesheet">
-  <style>
-    .badge:after{
-      content: " answers"
-    }
-  </style>
+	<title>Questions</title>
+	<link href="/stylesheets/bootstrap.css" rel="stylesheet">
+	<style>
+		.badge:after {
+			content: " answers"
+		}
+	</style>
 
 </head>
 <body>
 
-  <% include navbar-loggedin %>
+<% include navbar-loggedin %>
 
-  <div class="container">
-    <div class="page-header"><h1>Questions</h1></div>
+<div class="container">
+	<div class="page-header"><h1>Questions</h1></div>
 
-    <div class="row">
-      <div class="col-lg-10 col-lg-offset-1">
-        <ul class="nav nav-pills text-center">
-          <li><a href="/answer/?tab=recent">Most Recent</a></li>
-          <li><a href="/answer/?tab=topfav">Most Favourited</a></li>
-          <li><a href="/answer/?tab=viewcategories">View Categories</a></li>
-        </ul>
-        <br>
+	<div class="row">
+		<div class="col-lg-10 col-lg-offset-1">
+			<ul class="nav nav-pills text-center">
+				<li><a href="/answer/?tab=recent">Most Recent</a></li>
+				<li><a href="/answer/?tab=topfav">Most Favourited</a></li>
+				<li><a href="/answer/?tab=viewcategories">View Categories</a></li>
+			</ul>
+			<br>
 
-        <ul class="list-group">
-          <% categories.forEach(function(entry){ %>
-          <li class="list-group-item">
-            <a href="/category/<%= entry.replace(/[^a-zA-Z0-9]/g, '')%>"><h4><%= entry%></h4></a>
-          </li>
-          <%}); %>
-        </ul>
-      </div>
-    </div>
-  </div>
+			<ul class="list-group">
+				<% categories.forEach(function(entry){ %>
+				<li class="list-group-item">
+					<a href="/category/<%= entry.replace(/[^a-zA-Z0-9]/g, '') %>"><h4><%= entry %></h4></a>
+				</li>
+				<% }); %>
+			</ul>
+		</div>
+	</div>
+</div>
 
 
-  <script src="/js/jquery.min.js" type="text/javascript"></script>
-  <script src="/js/jquery.timeago.js" type="text/javascript"></script>
-  <script>
-    $(document).ready(function() {
-      $("li:nth-of-type(<%=n%>)").addClass('active');
-    });
-  </script>
+<script src="/js/jquery.min.js" type="text/javascript"></script>
+<script src="/js/jquery.timeago.js" type="text/javascript"></script>
+<script>
+	$(document).ready(function () {
+		$("li:nth-of-type(<%=n%>)").addClass('active');
+	});
+</script>
 </body>
 </html>

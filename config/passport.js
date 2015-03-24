@@ -45,7 +45,7 @@ module.exports = function (passport) {
 
                 // find a user whose email is the same as the forms email
                 // we are checking to see if the user trying to login already exists
-                User.findOne({ 'email': email }, function (err, user) {
+                User.findOne({'email': email}, function (err, user) {
                     console.log("db query done");
                     // if there are any errors, return the error
                     if (err) {
@@ -90,7 +90,7 @@ module.exports = function (passport) {
                 email = email.toLowerCase();
                 // find a user whose email is the same as the forms email
                 // we are checking to see if the user trying to login already exists
-                User.findOne({ 'email': email }, function (err, user) {
+                User.findOne({'email': email}, function (err, user) {
                     // if there are any errors, return the error before anything else
                     if (err)
                         return done(err);
