@@ -19,7 +19,12 @@ exports.createTestUser = function (email, password, firstName, done) {
 };
 
 exports.createQuestion = function (questionTitle, text, askerId, categoryIndex, done) {
-    var q1 = new Question({name: questionTitle, text: text, asker: askerId, category: global.questionCategories[categoryIndex]});
+    var q1 = new Question({
+        name: questionTitle,
+        text: text,
+        asker: askerId,
+        category: global.questionCategories[categoryIndex]
+    });
     q1.save(function (err, question) {
         if (err) {
             console.log(err);

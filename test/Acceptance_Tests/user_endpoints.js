@@ -115,19 +115,19 @@ describe('User Endpoints', function () {
                 });
             });
         });
-        it ('should give missing token error if missing token', function (done) {
+        it('should give missing token error if missing token', function (done) {
             request(app).get('/api/user').expect(400).end(function (err, res) {
                 res.body.error.should.equal(Constants.ERROR.MISSING.TOKEN);
                 done();
             });
         });
-        it ('should give invalid token error if token is invalid', function (done) {
+        it('should give invalid token error if token is invalid', function (done) {
             request(app).get('/api/user?token=blahoo').expect(400).end(function (err, res) {
                 res.body.error.should.equal(Constants.ERROR.INVALID.TOKEN);
                 done();
             });
         });
-        it ('should give user if valid token', function (done) {
+        it('should give user if valid token', function (done) {
             request(app).get('/api/user?token=' + token).expect(400).end(function (err, res) {
                 Date.parse(res.body.dateJoined).should.equal(user.dateCreated.getTime());
                 res.body.email.should.equal("testemail");
@@ -182,19 +182,19 @@ describe('User Endpoints', function () {
                 });
             });
         });
-        it ('should give missing token error if missing token', function (done) {
+        it('should give missing token error if missing token', function (done) {
             request(app).get('/api/user/' + user._id).expect(400).end(function (err, res) {
                 res.body.error.should.equal(Constants.ERROR.MISSING.TOKEN);
                 done();
             });
         });
-        it ('should give invalid token error if token is invalid', function (done) {
+        it('should give invalid token error if token is invalid', function (done) {
             request(app).get('/api/user?token=blahoo').expect(400).end(function (err, res) {
                 res.body.error.should.equal(Constants.ERROR.INVALID.TOKEN);
                 done();
             });
         });
-        it ('should give user if valid id and token', function (done) {
+        it('should give user if valid id and token', function (done) {
             request(app).get('/api/user/' + user._id + '?token=' + token).expect(400).end(function (err, res) {
                 Date.parse(res.body.dateJoined).should.equal(user.dateCreated.getTime());
                 res.body.email.should.equal("testemail");

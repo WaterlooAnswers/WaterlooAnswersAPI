@@ -9,18 +9,18 @@
 <% include navbar-loggedin %>
 
 <div class="container">
-<div class="page-header"><h1><%=question.name%></h1></div>
-<p class="lead"><%=question.text%></p>
+	<div class="page-header"><h1><%= question.name %></h1></div>
+	<p class="lead"><%= question.text %></p>
 
-<h3>Your Answer: </h3>
- <form action="/addanswer" method="post">
- 	<input type="hidden" name="questionid" value="<%= question["_id"]%>">
-    <input type="text" name="text"><br>
-    <input type="submit" value="Send">
- </form>
+	<h3>Your Answer: </h3>
+
+	<form action="/addanswer" method="post">
+		<input type="hidden" name="questionid" value="<%= question["_id"] %>">
+		<input type="text" name="text"><br>
+		<input type="submit" value="Send">
+	</form>
 
 </div>
-
 
 
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>

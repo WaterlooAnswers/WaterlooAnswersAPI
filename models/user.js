@@ -9,7 +9,7 @@ var userSchema = mongoose.Schema({
     password: String,
     graduationYear: Number,
     program: String,
-    dateCreated: { type: Date, default: Date.now }
+    dateCreated: {type: Date, default: Date.now}
 });
 
 // generating a hash

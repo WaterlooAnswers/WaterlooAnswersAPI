@@ -16,7 +16,7 @@ describe('Answer Endpoints', function () {
         var question;
         var user;
         before(function (done) {
-            Answer.remove({}, function(err) {
+            Answer.remove({}, function (err) {
                 dbUtils.createTestUser("email", "password", "firstName", function (newUser) {
                     user = newUser;
                     dbUtils.createQuestion("title", "description", user._id, 1, function (doc) {
@@ -28,7 +28,7 @@ describe('Answer Endpoints', function () {
         });
         after(function (done) {
             dbUtils.clearUserCollection(function () {
-                dbUtils.clearQuestionCollection(function() {
+                dbUtils.clearQuestionCollection(function () {
                     Answer.remove({}, done);
                 });
             });
@@ -46,13 +46,20 @@ describe('Answer Endpoints', function () {
             });
         });
         it("should not post if missing token", function (done) {
-            request(app).post('/api/answers').send({questionId: "someId", answerBody: "description"}).expect(400).end(function (err, res) {
+            request(app).post('/api/answers').send({
+                questionId: "someId",
+                answerBody: "description"
+            }).expect(400).end(function (err, res) {
                 res.body.error.should.equal(Constants.ERROR.MISSING.TOKEN);
                 done();
             });
         });
         it("should not post if invalid token", function (done) {
-            request(app).post('/api/answers').send({questionId: "someId", answerBody: "description", token: "blahblahblah"}).expect(401).end(function (err, res) {
+            request(app).post('/api/answers').send({
+                questionId: "someId",
+                answerBody: "description",
+                token: "blahblahblah"
+            }).expect(401).end(function (err, res) {
                 res.body.error.should.equal(Constants.ERROR.INVALID.TOKEN);
                 done();
             });
@@ -60,7 +67,11 @@ describe('Answer Endpoints', function () {
         it("should post answer if given valid info", function (done) {
             var token = jwt.encode({userId: user._id}, "testsecret");
             token.should.not.be.empty;
-            request(app).post('/api/answers').send({questionId: question._id, answerBody: "description", token: token}).expect(200).end(function (err, res) {
+            request(app).post('/api/answers').send({
+                questionId: question._id,
+                answerBody: "description",
+                token: token
+            }).expect(200).end(function (err, res) {
                 console.log(res.body);
                 res.body.question.should.exist;
                 res.body.question.answers.should.not.be.empty;

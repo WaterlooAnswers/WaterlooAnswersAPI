@@ -7,14 +7,14 @@ global.questionCategories = [
 ];
 
 var questionSchema = mongoose.Schema({
-	asker: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-	name: String,
-	favourites: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
-	text: String,
-	time : { type : Date, default: Date.now },
-	answers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Answer' }],
+    asker: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    name: String,
+    favourites: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+    text: String,
+    time: {type: Date, default: Date.now},
+    answers: [{type: mongoose.Schema.Types.ObjectId, ref: 'Answer'}],
     viewers: [
-        { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+        {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
     ],
     category: {type: String, enum: global.questionCategories}
 });

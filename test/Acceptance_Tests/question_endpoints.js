@@ -16,7 +16,7 @@ describe('Question Endpoints', function () {
     describe("POST /questions", function () {
         var user;
         before(function (done) {
-            Question.remove({}, function() {
+            Question.remove({}, function () {
                 dbUtils.createTestUser("email", "password", "firstName", function (newUser) {
                     user = newUser;
                     done();
@@ -41,19 +41,31 @@ describe('Question Endpoints', function () {
             });
         });
         it("should not post if missing categoryIndex", function (done) {
-            request(app).post('/api/questions').send({questionTitle: "title", questionDescription: "description"}).expect(400).end(function (err, res) {
+            request(app).post('/api/questions').send({
+                questionTitle: "title",
+                questionDescription: "description"
+            }).expect(400).end(function (err, res) {
                 res.body.error.should.equal(Constants.ERROR.MISSING.QUESTION_CATEGORY);
                 done();
             });
         });
         it("should not post if missing token", function (done) {
-            request(app).post('/api/questions').send({questionTitle: "title", questionDescription: "description", categoryIndex: 2}).expect(400).end(function (err, res) {
+            request(app).post('/api/questions').send({
+                questionTitle: "title",
+                questionDescription: "description",
+                categoryIndex: 2
+            }).expect(400).end(function (err, res) {
                 res.body.error.should.equal(Constants.ERROR.MISSING.TOKEN);
                 done();
             });
         });
         it("should not post if invalid token", function (done) {
-            request(app).post('/api/questions').send({questionTitle: "title", questionDescription: "description", categoryIndex: 2, token: "blahblahblah"}).expect(400).end(function (err, res) {
+            request(app).post('/api/questions').send({
+                questionTitle: "title",
+                questionDescription: "description",
+                categoryIndex: 2,
+                token: "blahblahblah"
+            }).expect(400).end(function (err, res) {
                 res.body.error.should.equal(Constants.ERROR.INVALID.TOKEN);
                 done();
             });
@@ -61,7 +73,12 @@ describe('Question Endpoints', function () {
         it("should post question if given valid info", function (done) {
             var token = jwt.encode({userId: user._id}, "testsecret");
             token.should.not.be.empty;
-            request(app).post('/api/questions').send({questionTitle: "title", questionDescription: "description", categoryIndex: 2, token: token}).expect(200).end(function (err, res) {
+            request(app).post('/api/questions').send({
+                questionTitle: "title",
+                questionDescription: "description",
+                categoryIndex: 2,
+                token: token
+            }).expect(200).end(function (err, res) {
                 res.body.result.should.equal(Constants.SUCCESS.SAVE.QUESTION);
                 Question.find({}, function (err, docs) {
                     should.not.exist(err);
@@ -121,8 +138,8 @@ describe('Question Endpoints', function () {
         var user;
         var answer;
         before(function (done) {
-            Answer.remove({}, function() {
-              dbUtils.createTestUser("email", "password", "firstName", function (newUser) {
+            Answer.remove({}, function () {
+                dbUtils.createTestUser("email", "password", "firstName", function (newUser) {
                     user = newUser;
                     dbUtils.createQuestion("title", "description", user._id, 1, function (doc) {
                         question = doc;
@@ -142,7 +159,7 @@ describe('Question Endpoints', function () {
         });
         after(function (done) {
             dbUtils.clearUserCollection(function () {
-                dbUtils.clearQuestionCollection(function() {
+                dbUtils.clearQuestionCollection(function () {
                     Answer.remove({}, done);
                 });
             });
@@ -158,7 +175,10 @@ describe('Question Endpoints', function () {
             });
         });
         it("should not delete if invalid token", function (done) {
-            request(app).delete('/api/questions').send({id: "blah", token: "blahblahblah"}).expect(401).end(function (err, res) {
+            request(app).delete('/api/questions').send({
+                id: "blah",
+                token: "blahblahblah"
+            }).expect(401).end(function (err, res) {
                 res.body.error.should.equal(Constants.ERROR.INVALID.TOKEN);
                 Question.find({}, function (err, docs) {
                     should.not.exist(err);
@@ -168,7 +188,10 @@ describe('Question Endpoints', function () {
             });
         });
         it("should not delete if invalid id", function (done) {
-            request(app).delete('/api/questions').send({id: "blah", token: jwt.encode({userId: user._id}, "testsecret")}).expect(400).end(function (err, res) {
+            request(app).delete('/api/questions').send({
+                id: "blah",
+                token: jwt.encode({userId: user._id}, "testsecret")
+            }).expect(400).end(function (err, res) {
                 res.body.error.should.equal(Constants.ERROR.QUESTION_BY_ID);
                 Question.find({}, function (err, docs) {
                     should.not.exist(err);
@@ -184,7 +207,10 @@ describe('Question Endpoints', function () {
                 Answer.find({}, function (err, answers) {
                     should.not.exist(err);
                     answers.length.should.equal(1);
-                    request(app).delete('/api/questions').send({id: question._id, token: jwt.encode({userId: user._id}, "testsecret")}).expect(204).end(function (err, res) {
+                    request(app).delete('/api/questions').send({
+                        id: question._id,
+                        token: jwt.encode({userId: user._id}, "testsecret")
+                    }).expect(204).end(function (err, res) {
                         Question.find({}, function (err, docs) {
                             should.not.exist(err);
                             docs.length.should.equal(0);
